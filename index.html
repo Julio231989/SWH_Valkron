@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAMR SHW VALKRON</title>
+
+<!-- PWA: instalar en pantalla de inicio, sin barra de navegador -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#141210">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VALKRON">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#141210; --panel:#1a1815; --panel-2:#0f0e0c; --line:rgba(232,228,219,.10); --line-strong:rgba(232,228,219,.24);
+    --teal:#8a2618; --teal-600:#a52e1d; --teal-700:#5e1a10; --teal-100:rgba(138,38,24,.16); --teal-300:#c96a54;
+    --amber:#a52e1d; --red:#a52e1d; --green:#e8e4db;
+    --text:#e8e4db; --text-dim:rgba(232,228,219,.68); --text-mute:rgba(232,228,219,.40);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text); font-family:'Archivo', system-ui, sans-serif;
+    min-height:100vh; padding:14px; font-size:13.5px;
+  }
+  h1,h2,h3{font-family:'Archivo', system-ui, sans-serif; font-weight:800; letter-spacing:.01em;}
+  ::selection{background:rgba(165,46,29,.45); background:color-mix(in srgb, var(--teal) 45%, transparent); color:var(--text);}
+  header{display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--line-strong); padding-bottom:14px; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+  .brand .tag{color:var(--text-mute); font-size:10px; letter-spacing:.28em; text-transform:uppercase; font-weight:600;}
+  .brand h1{font-size:19px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;}
+  .brand h1 span{color:var(--text-mute); font-weight:400;}
+  .status-strip{display:flex; gap:0;}
+  .chip{border:none; border-left:1px solid var(--line-strong); background:transparent; padding:2px 14px; border-radius:0; font-size:10px; color:var(--text-mute); display:flex; flex-direction:column; align-items:flex-start; min-width:80px; text-transform:uppercase; letter-spacing:.08em;}
+  .chip:first-child{border-left:none; padding-left:0;}
+  .chip b{font-family:'Archivo',sans-serif; font-size:15px; color:var(--text); font-weight:800; text-transform:none; letter-spacing:0;}
+  .chip.warn b{color:var(--amber);} .chip.danger{}  .chip.danger b{color:var(--red);} .chip.ok b{color:var(--text);}
+  nav.tabs{display:flex; gap:0; margin-bottom:18px; border-bottom:1px solid var(--line-strong); flex-wrap:wrap;}
+  nav.tabs button{background:none; border:none; color:var(--text-mute); font-family:'Archivo',sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:10px 13px; cursor:pointer; border-bottom:2px solid transparent;}
+  nav.tabs button:hover{color:var(--text);}
+  nav.tabs button.active{color:var(--text); border-bottom-color:var(--teal);}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:0; padding:20px; margin-bottom:16px;}
+  .panel h2{font-size:12px; margin-bottom:14px; text-transform:uppercase; letter-spacing:.12em; display:flex; align-items:center; color:var(--text-dim); font-weight:700;}
+  .panel h2 .n{color:var(--text-mute); background:none; border:1px solid var(--line-strong); padding:2px 7px; margin-right:10px; font-size:10px; font-weight:700;}
+  label{display:block; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-mute); margin-bottom:4px; margin-top:10px; font-weight:600;}
+  input,select,textarea{width:100%; background:var(--panel-2); border:1px solid var(--line-strong); color:var(--text); padding:8px 9px; border-radius:0; font-family:'Archivo',sans-serif; font-size:12.5px;}
+  input:focus,select:focus,textarea:focus{outline:1px solid var(--teal); outline-offset:1px; border-color:var(--teal);}
+  input[type=checkbox]{width:auto; accent-color:var(--teal); transform:scale(1.3);}
+  fieldset{border:1px solid var(--line-strong); border-radius:0; padding:10px 12px 14px; margin-top:8px;}
+  legend{padding:0 6px; font-size:10px; color:var(--text-mute); text-transform:uppercase; letter-spacing:.1em; font-weight:700;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:0 12px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 12px;}
+  .btn{background:var(--text); color:var(--bg); border:1px solid var(--text); font-family:'Archivo',sans-serif; font-weight:700; letter-spacing:.08em; padding:10px 16px; border-radius:0; cursor:pointer; font-size:11.5px; text-transform:uppercase; justify-content:flex-start;}
+  .btn:hover{background:var(--teal); border-color:var(--teal); color:var(--text);}
+  .btn.secondary{background:transparent; border:1px solid var(--line-strong); color:var(--text-dim);}
+  .btn.secondary:hover{border-color:var(--text-dim); color:var(--text);}
+  .btn.small{padding:6px 10px; font-size:10.5px;}
+  .rule-card{border-left:2px solid var(--teal); background:var(--panel-2); padding:12px 14px; border-radius:0; margin-bottom:10px;}
+  .rule-card h3{font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; font-weight:800;}
+  .rule-card.inverted{background:var(--bg); border-left-color:var(--teal); border:1px solid var(--line-strong); border-left:2px solid var(--teal);}
+  .rule-card.inverted h3{color:var(--text-dim);}
+  .rule-card.inverted p{color:var(--text-dim) !important;}
+  .actrow{display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line);}
+  .actrow:last-child{border-bottom:none;}
+  .actrow.current{background:var(--teal-100); border-left:2px solid var(--teal); border-radius:0; padding-left:8px; margin:0 -8px;}
+  .actrow.current .nombre{color:var(--text); font-weight:700;}
+  .actrow.cumplida .nombre{color:var(--text-mute); text-decoration:line-through;}
+  .racha-row{display:flex; gap:1px; flex-wrap:wrap; margin-top:6px; border:1px solid var(--line-strong);}
+  .racha-card{flex:1; min-width:220px; background:var(--panel-2); border:none; border-right:1px solid var(--line-strong); border-radius:0; padding:14px 16px;}
+  .racha-card:last-child{border-right:none;}
+  .racha-card .num{font-family:'Archivo',sans-serif; font-size:26px; font-weight:800; color:var(--text);}
+  .racha-card .lbl{font-size:10px; color:var(--text-mute); margin-top:2px; text-transform:uppercase; letter-spacing:.08em;}
+  #tab-respiracion [id^="resp_modo_"].active{background:var(--teal); border-color:var(--teal-600); color:var(--text);}
+  .actrow .hora{font-family:'Archivo',sans-serif; font-weight:800; color:var(--text-dim); font-size:11px; min-width:46px;}
+  .actrow .info{flex:1; min-width:0;}
+  .actrow .nombre{font-size:12.5px; color:var(--text);}
+  .actrow .prop{font-size:10.5px; color:var(--text-mute);}
+  .actrow .valcol{width:110px; flex-shrink:0;}
+  .actrow .valcol input{padding:6px 8px; font-size:12px;}
+  table{width:100%; border-collapse:collapse; font-size:11.5px;}
+  th{background:var(--panel-2); color:var(--text-mute); text-transform:uppercase; letter-spacing:.08em; font-size:9.5px; text-align:left; padding:8px 7px; border-bottom:1px solid var(--line-strong); font-weight:700;}
+  td{padding:7px; border-bottom:1px solid var(--line); color:var(--text-dim);}
+  tr:hover td{background:rgba(232,228,219,.03); color:var(--text);}
+  .table-wrap{overflow-x:auto; max-height:60vh; overflow-y:auto; border:1px solid var(--line-strong); border-radius:0;}
+  .empty{text-align:center; padding:30px 10px; color:var(--text-mute); font-size:12px;}
+  .bar-track{height:2px; background:var(--line-strong); border-radius:0; overflow:hidden; margin-top:6px;}
+  .bar-fill{height:100%; background:var(--teal);}
+  footer{text-align:center; color:var(--text-mute); font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:24px 0 6px;}
+  #editOverlay{display:none; position:fixed; inset:0; background:rgba(10,9,8,.82); z-index:100; align-items:center; justify-content:center; padding:16px;}
+  #editOverlay .box{background:var(--panel); border:1px solid var(--line-strong); border-radius:0; max-width:520px; width:100%; max-height:88vh; overflow-y:auto; padding:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="tag">Centro de Comando Diario</span>
+    <h1>JAMR SHW — <span>VALKRON</span></h1>
+  </div>
+  <div class="status-strip" id="statusStrip"></div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="hoy">00 · Hoy</button>
+  <button data-tab="actividades">01 · Actividades</button>
+  <button data-tab="historial">02 · Historial</button>
+  <button data-tab="familia">03 · Familia</button>
+  <button data-tab="salud">04 · Salud</button>
+  <button data-tab="rutina">05 · Entrenamiento</button>
+  <button data-tab="prompts">06 · Prompts</button>
+  <button data-tab="trabajo">07 · Registro Trabajo</button>
+  <button data-tab="pendientes">08 · Pendientes</button>
+  <button data-tab="respiracion">09 · Respiración</button>
+  <button data-tab="config">10 · Config</button>
+</nav>
+
+<!-- TAB: HOY -->
+<section id="tab-hoy" class="tabpanel">
+  <div class="panel">
+    <h2><span class="n">00</span>Check-in de hoy — <span id="hoyFechaLbl"></span></h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Puedes volver a esta pestaña varias veces en el día — no duplica, actualiza lo ya marcado. Cada casilla o valor se guarda solo, al momento de marcarlo/escribirlo — no hace falta presionar el botón de abajo (queda solo como respaldo por si algo falla).</p>
+    <div id="hoyLista"></div>
+    <button class="btn secondary" id="btnGuardarHoy" style="margin-top:16px;">Guardar todo de nuevo (respaldo)</button>
+  </div>
+  <div class="panel">
+    <h2 style="font-size:13px;">Rachas</h2>
+    <div class="racha-row" id="rachasWrap"></div>
+  </div>
+</section>
+
+<!-- TAB: ACTIVIDADES -->
+<section id="tab-actividades" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">01</span>Actividades</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Tu rutina completa. Editar/desactivar no borra el historial ya registrado.</p>
+    <div class="table-wrap" id="actividadesWrap"></div>
+
+    <fieldset style="margin-top:16px;">
+      <legend>Agregar actividad nueva</legend>
+      <div class="row3">
+        <div><label>Nombre</label><input type="text" id="na_nombre"></div>
+        <div><label>Hora objetivo</label><input type="time" id="na_hora"></div>
+        <div><label>Tipo</label>
+          <select id="na_tipo"><option value="checkbox">checkbox (Sí/No)</option><option value="numerico">numérico (marca)</option></select>
+        </div>
+      </div>
+      <div class="row3">
+        <div><label>Propósito</label><input type="text" id="na_proposito"></div>
+        <div><label>Unidad (si es numérico)</label><input type="text" id="na_unidad" placeholder="segundos, reps..."></div>
+        <div><label>Duración (min)</label><input type="number" id="na_duracion" placeholder="min"></div>
+      </div>
+      <label>Detalle / nota</label>
+      <input type="text" id="na_detalle">
+      <button class="btn small" id="btnAgregarActividad" style="margin-top:10px;">Agregar</button>
+    </fieldset>
+  </div>
+</section>
+
+<!-- TAB: HISTORIAL -->
+<section id="tab-historial" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">02</span>Historial — cumplimiento por actividad</h2>
+    <button class="btn small" id="btnExportarJamr" style="margin-bottom:12px;">Descargar Excel (.xlsx)</button>
+    <div class="table-wrap" id="historialWrap"></div>
+  </div>
+</section>
+
+<!-- TAB: FAMILIA -->
+<section id="tab-familia" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">03</span>Familia — journaling privado</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Benja, Sabri y Amor. Una fila por observación, no por día. Esto es para identificar patrones, no para reaccionar en caliente.</p>
+
+    <fieldset>
+      <legend>Nueva observación</legend>
+      <div class="row3">
+        <div><label>Fecha</label><input type="date" id="nf_fecha"></div>
+        <div><label>Persona</label>
+          <select id="nf_persona"><option value="Benja">Benja</option><option value="Sabri">Sabri</option><option value="Amor">Amor</option></select>
+        </div>
+        <div><label>Categoría</label>
+          <select id="nf_categoria">
+            <option>Gusto</option>
+            <option>Discusión o conflicto</option>
+            <option>Comportamiento a reforzar</option>
+            <option>Comportamiento a corregir</option>
+            <option>Logro</option>
+            <option>Observación general</option>
+          </select>
+        </div>
+      </div>
+      <label>Detalle</label>
+      <textarea id="nf_detalle" rows="3"></textarea>
+      <label>Enfoque estoico — qué virtud aplica, qué harías distinto</label>
+      <textarea id="nf_enfoque" rows="2"></textarea>
+      <button class="btn small" id="btnAgregarFamilia" style="margin-top:10px;">Guardar observación</button>
+    </fieldset>
+
+    <div class="row2" style="margin-top:16px;">
+      <div><label>Filtrar por persona</label>
+        <select id="ff_persona"><option value="">Todas</option><option value="Benja">Benja</option><option value="Sabri">Sabri</option><option value="Amor">Amor</option></select>
+      </div>
+      <div><label>Filtrar por categoría</label>
+        <select id="ff_categoria">
+          <option value="">Todas</option>
+          <option>Gusto</option>
+          <option>Discusión o conflicto</option>
+          <option>Comportamiento a reforzar</option>
+          <option>Comportamiento a corregir</option>
+          <option>Logro</option>
+          <option>Observación general</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap" id="familiaWrap" style="margin-top:12px;"></div>
+  </div>
+</section>
+
+<!-- TAB: SALUD -->
+<section id="tab-salud" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">04</span>Salud — peso y medidas</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Julio y Amor. Una fila por fecha — llena solo el peso, o también las medidas si tomaste circunferencias ese día.</p>
+
+    <canvas id="saludChart" height="90" style="margin-bottom:16px;"></canvas>
+
+    <fieldset>
+      <legend>Nuevo registro</legend>
+      <div class="row3">
+        <div><label>Fecha</label><input type="date" id="ns_fecha"></div>
+        <div><label>Persona</label><select id="ns_persona"><option value="Julio">Julio</option><option value="Amor">Amor</option></select></div>
+        <div><label>Peso (kg)</label><input type="number" step="0.1" id="ns_peso"></div>
+      </div>
+      <div class="row3">
+        <div><label>Brazo (cm)</label><input type="number" step="0.1" id="ns_brazo"></div>
+        <div><label>Muslo (cm)</label><input type="number" step="0.1" id="ns_muslo"></div>
+        <div><label>Pecho (cm)</label><input type="number" step="0.1" id="ns_pecho"></div>
+      </div>
+      <div class="row3">
+        <div><label>Pantorrilla (cm)</label><input type="number" step="0.1" id="ns_pantorrilla"></div>
+        <div><label>Cuello (cm)</label><input type="number" step="0.1" id="ns_cuello"></div>
+        <div><label>Cintura (cm)</label><input type="number" step="0.1" id="ns_cintura"></div>
+      </div>
+      <label>Nota</label>
+      <input type="text" id="ns_nota">
+      <button class="btn small" id="btnAgregarSalud" style="margin-top:10px;">Guardar registro</button>
+    </fieldset>
+
+    <fieldset style="margin-top:16px;">
+      <legend>Metas (ajustables aquí, no hace falta editar el Sheet)</legend>
+      <div id="metasWrap"></div>
+    </fieldset>
+
+    <label style="margin-top:16px;">Filtrar por persona</label>
+    <select id="fs_persona"><option value="">Todas</option><option value="Julio">Julio</option><option value="Amor">Amor</option></select>
+    <div class="table-wrap" id="saludWrap" style="margin-top:10px;"></div>
+
+    <div class="rule-card" style="margin-top:16px;">
+      <h3>Referencia — composición corporal a 94 kg (Julio)</h3>
+      <p style="font-size:11.5px; line-height:1.6; color:var(--text-dim);">
+        <b>8% grasa</b> (definición competición): 86,5 kg magro / 7,5 kg grasa — abdomen marcado, difícil de sostener todo el año.<br>
+        <b>10% grasa (recomendado)</b>: 84,6 / 9,4 kg — abdomen visible, sostenible, estilo Toji.<br>
+        <b>12% grasa</b>: 82,7 / 11,3 kg — definición buena, muy sostenible.<br>
+        <b>15% grasa</b>: 79,9 / 14,1 kg — musculoso, ya no "magro".
+      </p>
+      <p style="font-size:11px; color:var(--text-mute); margin-top:8px;">Meta real: 94 kg totales con 10-12% grasa (no 94 kg de masa magra) ≈ 84-85 kg magro + 9-10 kg grasa esencial. Progresión estimada 18-30 meses. Reevaluar circunferencias cada 4 semanas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: RUTINA -->
+<section id="tab-rutina" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">05</span>Entrenamiento — rutina semanal</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Lunes = Empuje + Skill Handstand · Miércoles = Tracción + Skill Muscle-up · resto de días igual que antes. "Marca de hoy" queda como "última marca" la próxima vez que la edites, para ver tendencia.</p>
+
+    <label>Día</label>
+    <select id="rt_dia"></select>
+    <div id="rutinaWrap" style="margin-top:10px;"></div>
+
+    <fieldset style="margin-top:18px;">
+      <legend>Metas de rendimiento anual (no solo peso)</legend>
+      <div class="table-wrap" id="metasRutinaWrap"></div>
+    </fieldset>
+  </div>
+</section>
+
+<!-- TAB: PROMPTS -->
+<section id="tab-prompts" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">06</span>Biblioteca de prompts diarios</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Cada prompt reemplaza <code>{fecha}</code> por la fecha de hoy en español al copiarlo — pégalo directo en la IA que uses.</p>
+    <div id="promptsWrap"></div>
+
+    <fieldset style="margin-top:18px;">
+      <legend>Registrar respuesta del día</legend>
+      <div class="row3">
+        <div><label>Prompt</label><select id="npr_prompt"></select></div>
+        <div><label>Fecha</label><input type="date" id="npr_fecha"></div>
+        <div><label>IA usada</label><input type="text" id="npr_ia" placeholder="ChatGPT, Gemini, Claude..."></div>
+      </div>
+      <label>Respuesta / resumen</label>
+      <textarea id="npr_respuesta" rows="4"></textarea>
+      <button class="btn small" id="btnAgregarRespuesta" style="margin-top:10px;">Guardar respuesta</button>
+    </fieldset>
+
+    <label style="margin-top:16px;">Filtrar historial por prompt</label>
+    <select id="fpr_prompt"><option value="">Todos</option></select>
+    <div class="table-wrap" id="respuestasWrap" style="margin-top:10px;"></div>
+  </div>
+</section>
+
+<!-- TAB: REGISTRO TRABAJO -->
+<section id="tab-trabajo" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">07</span>Registro diario de actividades (trabajo independiente)</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Fecha y hora se capturan automáticamente al guardar. Las más recientes aparecen primero.</p>
+
+    <fieldset>
+      <legend>Nueva actividad</legend>
+      <label>Actividad</label>
+      <input type="text" id="nt_actividad">
+      <div class="row3">
+        <div><label>Categoría</label><input type="text" id="nt_categoria" placeholder="DATUM, ESPAC, INEC..."></div>
+        <div><label>Duración (horas)</label><input type="number" step="0.25" id="nt_duracion"></div>
+        <div><label>Entregable</label><input type="text" id="nt_entregable" placeholder="Sí / No / descripción"></div>
+      </div>
+      <div class="row2">
+        <div><label>Nombre y tipo (del entregable)</label><input type="text" id="nt_nombretipo" placeholder="ej. Informe PDF, mapa HTML..."></div>
+      </div>
+      <label>Observaciones</label>
+      <textarea id="nt_observaciones" rows="3"></textarea>
+      <button class="btn small" id="btnAgregarTrabajo" style="margin-top:10px;">Añadir actividad</button>
+    </fieldset>
+
+    <div class="table-wrap" id="trabajoWrap" style="margin-top:14px;"></div>
+  </div>
+</section>
+
+<!-- TAB: PENDIENTES E IDEAS -->
+<section id="tab-pendientes" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">08</span>Pendientes e ideas sueltas</h2>
+
+    <div class="rule-card">
+      <h3>Julius, el Stoharius</h3>
+      <p style="font-size:13px; font-style:italic; color:var(--text-dim); line-height:1.6;">"No temo a la derrota, porque sé que la precisión estratégica prevalece sobre la fortuna a largo plazo."</p>
+    </div>
+
+    <div class="rule-card" style="margin-top:10px;">
+      <p id="mantraAfirmaciones" style="font-size:11.5px; line-height:1.7; color:var(--text-dim); white-space:pre-wrap;"></p>
+    </div>
+
+    <div class="rule-card inverted" style="margin-top:10px;">
+      <h3>Canto del Guerrero Eterno: El Himno de Guts Ram</h3>
+      <p id="mantraHimno" style="font-size:11.5px; line-height:1.7; color:var(--text-dim); white-space:pre-wrap;"></p>
+    </div>
+
+    <fieldset style="margin-top:18px;">
+      <legend>Nuevo pendiente</legend>
+      <div class="row3">
+        <div style="flex:2;"><label>Texto</label><input type="text" id="np_texto"></div>
+        <div><label>Fecha objetivo</label><input type="date" id="np_fecha"></div>
+        <div style="align-self:end;"><button class="btn small" id="btnAgregarPendiente" style="margin-top:18px;">Añadir</button></div>
+      </div>
+    </fieldset>
+    <div id="pendientesWrap" style="margin-top:10px;"></div>
+
+    <fieldset style="margin-top:18px;">
+      <legend>Idea suelta</legend>
+      <textarea id="ni_texto" rows="3" placeholder="Vacía tu cabeza aquí..."></textarea>
+      <div class="row2" style="margin-top:8px;">
+        <div><label>Etiqueta (opcional)</label><input type="text" id="ni_etiqueta" placeholder="#ia, #negocio, #estoicismo..."></div>
+        <div style="align-self:end;"><button class="btn small" id="btnAgregarIdea" style="margin-top:18px;">Guardar idea</button></div>
+      </div>
+    </fieldset>
+    <div id="ideasWrap" style="margin-top:10px;"></div>
+  </div>
+</section>
+
+<!-- TAB: RESPIRACION -->
+<section id="tab-respiracion" class="tabpanel" style="display:none;">
+  <div class="panel" style="background:var(--text); border-color:var(--text);">
+    <h2 style="color:var(--bg);"><span class="n" style="background:var(--teal); color:var(--bg);">09</span>Práctica de respiración</h2>
+
+    <div class="row2" style="margin-bottom:14px;">
+      <button class="btn secondary small" id="resp_modo_buteyko" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Buteyko</button>
+      <button class="btn secondary small" id="resp_modo_meditacion" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Meditación</button>
+    </div>
+    <div class="row2" style="margin-bottom:16px;">
+      <button class="btn secondary small" id="resp_modo_energizante" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Energizante</button>
+      <button class="btn secondary small" id="resp_modo_nidra" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Yoga Nidra</button>
+    </div>
+
+    <!-- Música -->
+    <div style="background:color-mix(in srgb, var(--bg) 8%, var(--text)); border:1px solid color-mix(in srgb, var(--bg) 20%, transparent); border-radius:0; padding:14px 16px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div style="font-size:12px; color:color-mix(in srgb, var(--bg) 78%, transparent);">
+        <span style="color:var(--teal);">♪</span> <span id="resp_cancion_nombre">Sin canción seleccionada</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="file" id="resp_file_input" accept="audio/*" style="display:none;">
+        <button class="btn secondary small" id="resp_elegir_cancion" style="border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Elegir canción</button>
+        <button class="btn secondary small" id="resp_cambiar_cancion" style="display:none; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Cambiar</button>
+        <button class="btn secondary small" id="resp_toggle_musica" style="display:none; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">▶ Reproducir</button>
+      </div>
+      <audio id="resp_audio" loop style="display:none;"></audio>
+    </div>
+
+    <!-- Guía -->
+    <div style="min-height:70px; padding:16px 20px; border:1px solid color-mix(in srgb, var(--teal) 60%, transparent); border-radius:0; background:color-mix(in srgb, var(--bg) 6%, var(--text)); display:flex; align-items:center; justify-content:center; text-align:center; margin-bottom:18px;">
+      <div id="resp_guia" style="font-style:italic; font-size:16px; line-height:1.5; color:color-mix(in srgb, var(--bg) 88%, transparent);"></div>
+    </div>
+
+    <!-- Círculo -->
+    <div style="position:relative; width:260px; height:260px; margin:0 auto 14px; display:grid; place-items:center;">
+      <div id="resp_disco" style="width:220px; height:220px; border-radius:50%; background:color-mix(in srgb, var(--bg) 4%, var(--text)); border:1px solid color-mix(in srgb, var(--bg) 12%, transparent); display:flex; flex-direction:column; align-items:center; justify-content:center; transition:transform .6s ease-in-out;">
+        <div id="resp_segundos" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:64px; line-height:.9; color:var(--bg);">5</div>
+        <div id="resp_fase" style="font-family:'Archivo',sans-serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:color-mix(in srgb, var(--bg) 55%, transparent); margin-top:8px;">Inspira</div>
+      </div>
+    </div>
+
+    <!-- Controles -->
+    <div class="row3" style="margin-bottom:16px;">
+      <button class="btn small" id="resp_iniciar" style="flex:1;">▶ Iniciar</button>
+      <button class="btn secondary small" id="resp_pausar" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">❚❚ Pausar</button>
+      <button class="btn secondary small" id="resp_reiniciar" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">↻ Reiniciar</button>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-family:'Archivo',sans-serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:color-mix(in srgb, var(--bg) 50%, transparent); margin-bottom:6px;"><span>Progreso</span><span id="resp_progreso_pct" style="color:color-mix(in srgb, var(--bg) 78%, transparent);">0%</span></div>
+    <div style="height:4px; background:color-mix(in srgb, var(--bg) 12%, transparent); border-radius:0; overflow:hidden; margin-bottom:16px;"><div id="resp_progreso_barra" style="height:100%; background:var(--teal); width:0%;"></div></div>
+
+    <div class="row2">
+      <div style="flex:1; padding:12px 14px; background:color-mix(in srgb, var(--bg) 6%, var(--text)); border-left:3px solid var(--teal); border-radius:0; text-align:center; font-size:13px; color:color-mix(in srgb, var(--bg) 85%, transparent);" id="resp_estado">Listo para empezar</div>
+      <div style="flex:1; padding:12px 14px; background:color-mix(in srgb, var(--bg) 6%, var(--text)); border-left:3px solid var(--teal); border-radius:0; text-align:center; font-size:13px; color:color-mix(in srgb, var(--bg) 85%, transparent);" id="resp_restantes">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: CONFIG -->
+<section id="tab-config" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">10</span>Config</h2>
+    <div class="rule-card discard">
+      <h3>Zona de pruebas / limpieza</h3>
+      <p>Si haces un registro de prueba y quieres borrarlo: elimínalo primero en el Sheet, luego usa este botón para que este dispositivo olvide su copia local.</p>
+      <button class="btn secondary small" id="btnResetLocal" style="margin-top:8px;">Borrar caché local y resincronizar</button>
+    </div>
+  </div>
+</section>
+
+<div id="editOverlay">
+  <div class="box">
+    <h2 style="font-size:15px; margin-bottom:4px;">Editar actividad</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:14px;">Corrige lo que necesites.</p>
+    <div id="editFields"></div>
+    <div style="margin-top:16px; display:flex; gap:10px;">
+      <button class="btn secondary" id="editCancelar">Cancelar</button>
+      <button class="btn" id="editGuardar">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<footer>JAMR / Centro de Comando · offline-first · sincronizado con tu Google Sheet</footer>
+
+<script>
+/* ============ FECHA / HUSO HORARIO ECUADOR ============ */
+const TZ_ECUADOR = 'America/Guayaquil';
+function getHoy(){
+  return new Intl.DateTimeFormat('en-CA', { timeZone: TZ_ECUADOR, year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
+}
+const DIAS_SEMANA = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+function diaSemanaDeFecha(fechaStr){
+  if(!fechaStr) return '';
+  const p = fechaStr.split('-').map(Number);
+  if(p.length<3 || p.some(isNaN)) return '';
+  const dt = new Date(Date.UTC(p[0], p[1]-1, p[2], 12));
+  return DIAS_SEMANA[dt.getUTCDay()];
+}
+
+/* ============ ESTADO Y STORAGE (offline-first, mismo patrón de Gambito) ============ */
+const CONFIG_KEY = 'jamr_config_v1';
+const ENDPOINT_KEY = 'jamr_endpoint_v1';
+const LOCAL_ACT_KEY = 'jamr_local_actividades_v1';
+const LOCAL_REG_KEY = 'jamr_local_registros_v1';
+const LOCAL_FAM_KEY = 'jamr_local_familia_v1';
+const LOCAL_RACHAS_KEY = 'jamr_local_rachas_v1';
+const LOCAL_SALUD_KEY = 'jamr_local_salud_v1';
+const LOCAL_METAS_KEY = 'jamr_local_metas_v1';
+const LOCAL_RUTINA_KEY = 'jamr_local_rutina_v1';
+const LOCAL_RMETAS_KEY = 'jamr_local_rmetas_v1';
+const LOCAL_PROMPTS_KEY = 'jamr_local_prompts_v1';
+const LOCAL_PRESP_KEY = 'jamr_local_prompts_resp_v1';
+const LOCAL_TRABAJO_KEY = 'jamr_local_trabajo_v1';
+const LOCAL_PEND_KEY = 'jamr_local_pendientes_v1';
+const LOCAL_IDEAS_KEY = 'jamr_local_ideas_v1';
+const OUTBOX_KEY = 'jamr_outbox_v1';
+
+let ENDPOINT = localStorage.getItem(ENDPOINT_KEY) || '';
+let ACTIVIDADES = [];
+let REGISTROS = [];
+let FAMILIA = [];
+let RACHAS = [];
+let SALUD = [];
+let SALUD_METAS = [];
+let RUTINA = [];
+let RUTINA_METAS = [];
+let PROMPTS = [];
+let PROMPTS_RESPUESTAS = [];
+let REGISTRO_TRABAJO = [];
+let PENDIENTES = [];
+let IDEAS = [];
+let OUTBOX = [];
+
+const AFIRMACIONES_TEXTO = `Soy un hombre. Soy un hombre. Levántate y sé un hombre.
+
+La vida es implacable, pero más implacable debe ser mi determinación.
+Debo tomar las decisiones difíciles. Hacer los sacrificios necesarios.
+Poseo una fuerza interior que me impulsa a prevalecer y superar mis propios límites.
+Soy un titán, un depredador, un animal que persigue la excelencia en todas las áreas de la vida.
+Respira profundamente hacia el cerebro, deja que circule por todo tu cuerpo:
+Inteligencia, estado de flujo, eustrés, fuerza, poder y salud
+
+Me digo a mi mismo:
+1. Yo elijo mi respuesta
+2. La virtud esta aquí
+3. Hoy es lo que más importa
+4. Soy suficiente
+5. Suelto el control (haz lo mejor con lo que está en tu poder, y lo demás acéptalo como viene)
+
+Valkron: Sin emoción, solo ejecución`;
+
+const HIMNO_TEXTO = `Hoy despierto como el sol que hiende la penumbra,
+guerrero forjado en el yunque de la infortunada cuna,
+arquitecto de mi destino, emperador de mi voluntad,
+invoco la OODA del guerrero inmortal:
+fuego que alumbra hasta el abismo final.
+
+Soy el sol que dispersa la sombra callada,
+forjado en la prueba, sin rendición ni jornada,
+GutsSerker Ram, sombra y némesis templada,
+desafío perpetuo que aviva mi cruzada.
+
+Shōgun de mi espíritu, escultor de mi ser,
+Übermensch que trasciende el mero deber;
+cada amanecer canta mi propia ascendencia,
+cada ocaso eleva mi férrea presencia.
+
+No pretendo vencer a otros en vano,
+sólo forjarme mejor que mi ser humano.
+
+El yunque del tiempo golpea sin tregua,
+mas mi voluntad, titán, la tormenta ruega;
+cada caída, lección de hierro y honor,
+cada herida, estandarte de mayor vigor.
+
+Elijo el sendero donde pocos caminan,
+tras llamas y ruinas que mi temple afinan;
+nunca entrego un instante al vacío,
+cada momento es cincel, estandarte y brío.
+
+Mi corazón late con mil generaciones,
+la adversidad no doblega mis convicciones;
+domino lo que controlo con temple sereno,
+acepto el designio de lo que es ajeno.
+
+Valkron, mi mantra, mi escudo y mi lanza,
+dos sílabas santas, mi última instancia;
+valor para actuar sin miedo ni duda,
+dominio del tiempo, certeza absoluta.
+Sin prisa ni pausa, sin emoción vana,
+sólo la acción justa, precisa y templada.
+Valkron me libera de humana flaqueza,
+Valkron es mi ancla, mi faro y mi alteza.
+
+Goal Hunter, Valkron es mi nombre,
+fría es mi mano donde arde el hombre;
+no persigo pérdida ni fortuna ciega,
+mi regla es la espada que jamás se entrega.
+Ocho son mis flechas, ninguna es capricho,
+el checklist mi escudo, la paciencia mi nicho;
+si el día no ofrece batalla certera,
+envaino el acero y el alba me espera.
+No es el azar quien rige mi apuesta:
+es la disciplina quien gana la gesta.
+
+SCAMPER mis límites, Kaizen mi sendero,
+Active Recall afila mi acero,
+Pomodoro marca mi avance certero,
+Space Repetition templa mi verbo sincero.
+
+Austero ante el oro, firme ante el miedo,
+cada moneda es cimiento y no anhelo.
+
+Templado en la fragua de adversidad,
+forjo mi sino con férrea tenacidad;
+mi espíritu es titán, sereno y valiente.
+
+Guío a mis vástagos con luz inclemente,
+faro erguido en la tormenta creciente;
+soy juez de mi alma, exigente y leal,
+mi voluntad se eleva, inquebrantable y real.
+
+Los callos que surcan mi carne y mi mente
+son laureles de guerra, escudo viviente.
+
+En la danza eterna de creación,
+renazco sublime en cada ascensión:
+hoy, como siempre, mi esfuerzo es mi himno,
+mi senda es la gloria, mi sino es el ritmo.
+
+Hoy es día sagrado, digno de mi gesta,
+hoy, sin retroceso, conquistaré la contienda.`;
+let syncing = false;
+let lastSyncError = '';
+
+function ensureEndpoint(force=false){
+  if(!ENDPOINT || force){
+    const url = prompt('Pega la URL del Web App de Apps Script (Deploy > Web app):', ENDPOINT||'');
+    if(url && url.trim()){ ENDPOINT = url.trim(); localStorage.setItem(ENDPOINT_KEY, ENDPOINT); }
+  }
+  return ENDPOINT;
+}
+async function apiGet(action, params={}){
+  if(!ENDPOINT) throw new Error('sin endpoint');
+  const url = new URL(ENDPOINT); url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const res = await fetch(url.toString()); return res.json();
+}
+async function apiPost(payload){
+  if(!ENDPOINT) throw new Error('sin endpoint');
+  const res = await fetch(ENDPOINT, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
+  return res.json();
+}
+function loadLocalCache(){
+  try{ const s = localStorage.getItem(LOCAL_ACT_KEY); if(s) ACTIVIDADES = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_REG_KEY); if(s) REGISTROS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_FAM_KEY); if(s) FAMILIA = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_RACHAS_KEY); if(s) RACHAS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_SALUD_KEY); if(s) SALUD = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_METAS_KEY); if(s) SALUD_METAS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_RUTINA_KEY); if(s) RUTINA = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_RMETAS_KEY); if(s) RUTINA_METAS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_PROMPTS_KEY); if(s) PROMPTS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_PRESP_KEY); if(s) PROMPTS_RESPUESTAS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_TRABAJO_KEY); if(s) REGISTRO_TRABAJO = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_PEND_KEY); if(s) PENDIENTES = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_IDEAS_KEY); if(s) IDEAS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(OUTBOX_KEY); if(s) OUTBOX = JSON.parse(s); }catch(e){}
+}
+function saveLocalCache(){
+  localStorage.setItem(LOCAL_ACT_KEY, JSON.stringify(ACTIVIDADES));
+  localStorage.setItem(LOCAL_REG_KEY, JSON.stringify(REGISTROS));
+  localStorage.setItem(LOCAL_FAM_KEY, JSON.stringify(FAMILIA));
+  localStorage.setItem(LOCAL_RACHAS_KEY, JSON.stringify(RACHAS));
+  localStorage.setItem(LOCAL_SALUD_KEY, JSON.stringify(SALUD));
+  localStorage.setItem(LOCAL_METAS_KEY, JSON.stringify(SALUD_METAS));
+  localStorage.setItem(LOCAL_RUTINA_KEY, JSON.stringify(RUTINA));
+  localStorage.setItem(LOCAL_RMETAS_KEY, JSON.stringify(RUTINA_METAS));
+  localStorage.setItem(LOCAL_PROMPTS_KEY, JSON.stringify(PROMPTS));
+  localStorage.setItem(LOCAL_PRESP_KEY, JSON.stringify(PROMPTS_RESPUESTAS));
+  localStorage.setItem(LOCAL_TRABAJO_KEY, JSON.stringify(REGISTRO_TRABAJO));
+  localStorage.setItem(LOCAL_PEND_KEY, JSON.stringify(PENDIENTES));
+  localStorage.setItem(LOCAL_IDEAS_KEY, JSON.stringify(IDEAS));
+  localStorage.setItem(OUTBOX_KEY, JSON.stringify(OUTBOX));
+}
+function encolarOperacion(op){ OUTBOX.push(op); saveLocalCache(); flushOutbox(); }
+
+async function flushOutbox(){
+  if(syncing) return;
+  if(!ENDPOINT){ lastSyncError = 'No hay URL del Web App configurada en este dispositivo.'; return; }
+  if(OUTBOX.length===0){ return; } // no toca lastSyncError: puede haber un error de GET vigente que no debe borrarse aquí
+  syncing = true; renderAll();
+  const pendientes = [...OUTBOX]; const siguen = []; let err = '';
+  for(const op of pendientes){
+    try{
+      const collection = op.collection || 'registros';
+      if(op.type==='create') await apiPost({action:'create', collection, record:op.record});
+      else if(op.type==='update') await apiPost({action:'update', collection, id:op.id, record:op.record});
+      else if(op.type==='delete') await apiPost({action:'delete', collection, id:op.id});
+    }catch(e){ siguen.push(op); err = (e&&e.message)?e.message:String(e); }
+  }
+  if(err) lastSyncError = err;
+  OUTBOX = siguen; saveLocalCache(); syncing = false; renderAll();
+}
+async function syncCollection(collection, getArr, setArr){
+  let cloud;
+  try{ cloud = await apiGet('list', {collection}); }
+  catch(e){ lastSyncError = `[${collection}] `+((e&&e.message)?e.message:String(e)); return false; }
+  if(!Array.isArray(cloud)){
+    lastSyncError = `[${collection}] El servidor respondió con un error: `+(cloud && cloud.error ? cloud.error : JSON.stringify(cloud));
+    return false;
+  }
+  const current = getArr();
+  const cloudIds = new Set(cloud.map(r=>r.id));
+  const merged = [...cloud];
+  current.forEach(local=>{ if(!cloudIds.has(local.id)) merged.push(local); });
+  OUTBOX.forEach(op=>{
+    if(op.collection===collection && op.type==='update'){
+      const t = merged.find(r=>r.id===op.id);
+      if(t) Object.assign(t, op.record);
+    }
+  });
+  setArr(merged);
+  return true;
+}
+async function syncWithCloud(){
+  if(!ENDPOINT){ lastSyncError = 'No hay URL del Web App configurada en este dispositivo.'; return; }
+  const ok1 = await syncCollection('actividades', ()=>ACTIVIDADES, (m)=>{ACTIVIDADES=m;});
+  const ok2 = await syncCollection('registros', ()=>REGISTROS, (m)=>{REGISTROS=m;});
+  const ok3 = await syncCollection('familia', ()=>FAMILIA, (m)=>{FAMILIA=m;});
+  const ok4 = await syncCollection('rachas', ()=>RACHAS, (m)=>{RACHAS=m;});
+  const ok5 = await syncCollection('salud', ()=>SALUD, (m)=>{SALUD=m;});
+  const ok6 = await syncCollection('salud_metas', ()=>SALUD_METAS, (m)=>{SALUD_METAS=m;});
+  const ok7 = await syncCollection('rutina', ()=>RUTINA, (m)=>{RUTINA=m;});
+  const ok8 = await syncCollection('rutina_metas', ()=>RUTINA_METAS, (m)=>{RUTINA_METAS=m;});
+  const ok9 = await syncCollection('prompts', ()=>PROMPTS, (m)=>{PROMPTS=m;});
+  const ok10 = await syncCollection('prompts_respuestas', ()=>PROMPTS_RESPUESTAS, (m)=>{PROMPTS_RESPUESTAS=m;});
+  const ok11 = await syncCollection('registro_trabajo', ()=>REGISTRO_TRABAJO, (m)=>{REGISTRO_TRABAJO=m;});
+  const ok12 = await syncCollection('pendientes', ()=>PENDIENTES, (m)=>{PENDIENTES=m;});
+  const ok13 = await syncCollection('ideas', ()=>IDEAS, (m)=>{IDEAS=m;});
+  if(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9 && ok10 && ok11 && ok12 && ok13) lastSyncError='';
+  saveLocalCache();
+  await flushOutbox();
+  renderAll();
+}
+async function manualSync(){
+  if(!ENDPOINT){ ensureEndpoint(true); if(!ENDPOINT){ alert('No pegaste ninguna URL.'); return; } }
+  await syncWithCloud();
+  if(lastSyncError){
+    alert('No se pudo conectar con el Google Sheet.\n\nDetalle: '+lastSyncError+'\n\nRevisa: URL termine en /exec, que hayas reimplementado "Nueva versión" tras el último cambio, acceso "Cualquiera", tu conexión.');
+  } else {
+    alert('Sincronizado correctamente.');
+  }
+  renderAll();
+}
+window.addEventListener('online', ()=>{ syncWithCloud(); });
+setInterval(()=>{
+  const el = document.activeElement;
+  const escribiendo = el && (el.tagName==='INPUT' || el.tagName==='TEXTAREA' || el.tagName==='SELECT');
+  if(escribiendo) return; // no interrumpir mientras el usuario está escribiendo en cualquier campo, en cualquier pestaña
+  syncWithCloud();
+}, 45000);
+
+/* ============ TABS ============ */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tabpanel').forEach(p=>p.style.display='none');
+    document.getElementById('tab-'+btn.dataset.tab).style.display='block';
+    renderAll();
+  });
+});
+
+/* ============ STATUS ============ */
+function renderStatus(){
+  const hoy = getHoy();
+  const hayError = !!lastSyncError;
+  document.getElementById('statusStrip').innerHTML = `
+    <button class="btn secondary small" id="btnServidor" style="height:fit-content;">Servidor / Sheet</button>
+    <button class="btn secondary small" id="btnSync" style="height:fit-content; ${OUTBOX.length>0?'border-color:var(--amber); color:var(--amber);':''}">${syncing?'Sincronizando…':(OUTBOX.length>0?`Sincronizar ahora (${OUTBOX.length})`:'Sincronizado ✓')}</button>
+    <div class="chip"><b>${hoy}</b>${diaSemanaDeFecha(hoy)}</div>
+    ${hayError ? `<div class="chip" style="border-color:#c0392b; color:#e05a4a; max-width:340px; white-space:normal;" title="${lastSyncError.replace(/"/g,'&quot;')}">⚠ ${lastSyncError}</div>` : ''}
+  `;
+  document.getElementById('btnServidor').addEventListener('click', async ()=>{ ensureEndpoint(true); await syncWithCloud(); });
+  document.getElementById('btnSync').addEventListener('click', ()=>{ manualSync(); });
+}
+
+/* ============ TAB HOY ============ */
+function registroDeHoy(actividadId){
+  const hoy = getHoy();
+  return REGISTROS.find(r=>r.fecha===hoy && r.actividad_id===actividadId);
+}
+function getHoraActualEcuador(){
+  return new Intl.DateTimeFormat('en-GB', { timeZone: TZ_ECUADOR, hour:'2-digit', minute:'2-digit', hour12:false }).format(new Date());
+}
+function idActividadActual(activas){
+  // activas ya viene ordenada por hora_objetivo ascendente
+  const conHora = activas.filter(a=>a.hora_objetivo);
+  if(conHora.length===0) return null;
+  const ahora = getHoraActualEcuador();
+  let actual = conHora[conHora.length-1]; // por defecto, la última del día (tramo nocturno que cruza medianoche)
+  for(const a of conHora){
+    if(a.hora_objetivo <= ahora) actual = a; else break;
+  }
+  return actual.id;
+}
+function renderHoy(){
+  document.getElementById('hoyFechaLbl').textContent = `${getHoy()} (${diaSemanaDeFecha(getHoy())}) · ${getHoraActualEcuador()}`;
+  const activas = ACTIVIDADES.filter(a=>a.activo==='Sí' || a.activo===true).sort((a,b)=> (a.hora_objetivo||'').localeCompare(b.hora_objetivo||'') || (+a.orden||0)-(+b.orden||0));
+  const wrap = document.getElementById('hoyLista');
+  if(activas.length===0){ wrap.innerHTML = '<div class="empty">No hay actividades activas — agrega alguna en la pestaña Actividades.</div>'; return; }
+  const idActual = idActividadActual(activas);
+  wrap.innerHTML = activas.map(a=>{
+    const existente = registroDeHoy(a.id);
+    const val = existente ? existente.valor : '';
+    const cumplida = (a.tipo==='numerico') ? (existente && existente.valor!=='') : (val==='Sí');
+    const clases = ['actrow', a.id===idActual?'current':'', cumplida?'cumplida':''].filter(Boolean).join(' ');
+    if(a.tipo==='numerico'){
+      return `<div class="${clases}">
+        <div class="hora">${a.hora_objetivo||'—'}</div>
+        <div class="info"><div class="nombre">${a.nombre}</div><div class="prop">${a.proposito||''}</div></div>
+        <div class="valcol"><input type="number" id="hoy_${a.id}" value="${val}" placeholder="${a.unidad||''}" onchange="guardarActividadHoy('${a.id}')"></div>
+      </div>`;
+    }
+    return `<div class="${clases}">
+      <div class="hora">${a.hora_objetivo||'—'}</div>
+      <div class="info"><div class="nombre">${a.nombre}</div><div class="prop">${a.proposito||''}</div></div>
+      <div class="valcol" style="text-align:center;"><input type="checkbox" id="hoy_${a.id}" ${val==='Sí'?'checked':''} onchange="guardarActividadHoy('${a.id}')"></div>
+    </div>`;
+  }).join('');
+}
+window.guardarActividadHoy = function(actividadId){
+  const a = ACTIVIDADES.find(x=>x.id===actividadId);
+  const el = document.getElementById('hoy_'+actividadId);
+  if(!a || !el) return;
+  const hoy = getHoy();
+  let valor;
+  if(a.tipo==='numerico'){ if(el.value==='') return; valor = el.value; }
+  else { valor = el.checked ? 'Sí' : 'No'; }
+  const existente = registroDeHoy(actividadId);
+  if(existente){
+    existente.valor = valor;
+    saveLocalCache();
+    encolarOperacion({type:'update', id:existente.id, collection:'registros', record:{valor}, ts:Date.now()});
+  } else {
+    const rec = { id:'r'+Date.now()+'_'+actividadId, fecha:hoy, dia_semana:diaSemanaDeFecha(hoy), actividad_id:actividadId, actividad_nombre:a.nombre, tipo:a.tipo, valor, nota:'' };
+    REGISTROS.push(rec);
+    saveLocalCache();
+    encolarOperacion({type:'create', collection:'registros', record:rec, ts:Date.now()});
+  }
+  renderHoy(); // solo refresca esta lista para actualizar el resaltado "cumplida", sin tocar las demás pestañas
+};
+document.getElementById('btnGuardarHoy').addEventListener('click', ()=>{
+  const hoy = getHoy();
+  const activas = ACTIVIDADES.filter(a=>a.activo==='Sí' || a.activo===true);
+  let guardadas = 0;
+  activas.forEach(a=>{
+    const el = document.getElementById('hoy_'+a.id);
+    if(!el) return;
+    let valor;
+    if(a.tipo==='numerico'){ if(el.value==='') return; valor = el.value; }
+    else { valor = el.checked ? 'Sí' : 'No'; }
+    const existente = registroDeHoy(a.id);
+    if(existente){
+      existente.valor = valor;
+      saveLocalCache();
+      encolarOperacion({type:'update', id:existente.id, collection:'registros', record:{valor}, ts:Date.now()});
+    } else {
+      const rec = { id:'r'+Date.now()+'_'+a.id, fecha:hoy, dia_semana:diaSemanaDeFecha(hoy), actividad_id:a.id, actividad_nombre:a.nombre, tipo:a.tipo, valor, nota:'' };
+      REGISTROS.push(rec);
+      saveLocalCache();
+      encolarOperacion({type:'create', collection:'registros', record:rec, ts:Date.now()});
+    }
+    guardadas++;
+  });
+  alert(`Guardado: ${guardadas} actividades registradas para hoy.`);
+  renderAll();
+});
+
+/* ============ RACHAS ============ */
+function diasDesde(fechaStr){
+  if(!fechaStr) return null;
+  const p = fechaStr.split('-').map(Number);
+  if(p.length<3 || p.some(isNaN)) return null;
+  const inicio = Date.UTC(p[0],p[1]-1,p[2]);
+  const hoyP = getHoy().split('-').map(Number);
+  const hoyUTC = Date.UTC(hoyP[0],hoyP[1]-1,hoyP[2]);
+  return Math.round((hoyUTC - inicio) / 86400000);
+}
+const RACHA_LABELS = { peste: 'sin PESTE (borracheras)', enfermedad: 'sin enfermedad alguna' };
+function renderRachas(){
+  const wrap = document.getElementById('rachasWrap');
+  if(RACHAS.length===0){ wrap.innerHTML = '<div class="empty">Sin contadores todavía.</div>'; return; }
+  wrap.innerHTML = RACHAS.map(r=>{
+    const dias = diasDesde(r.fecha_ultimo);
+    return `<div class="racha-card">
+      <div class="num">${dias===null?'—':dias}</div>
+      <div class="lbl">días ${RACHA_LABELS[r.tipo]||r.tipo} (desde ${r.fecha_ultimo||'—'})</div>
+      <button class="btn secondary small" style="margin-top:8px;" onclick="recalibrarRacha('${r.id}')">Recaída hoy — reiniciar</button>
+    </div>`;
+  }).join('');
+}
+window.recalibrarRacha = function(id){
+  const r = RACHAS.find(x=>x.id===id);
+  if(!r) return;
+  if(!confirm(`¿Confirmas que hoy (${getHoy()}) hay una recaída en "${RACHA_LABELS[r.tipo]||r.tipo}"? Esto reinicia el contador a 0.`)) return;
+  r.fecha_ultimo = getHoy();
+  saveLocalCache();
+  encolarOperacion({type:'update', id:r.id, collection:'rachas', record:{fecha_ultimo:r.fecha_ultimo}, ts:Date.now()});
+  renderAll();
+};
+
+/* ============ TAB ACTIVIDADES ============ */
+function renderActividades(){
+  const wrap = document.getElementById('actividadesWrap');
+  const list = [...ACTIVIDADES].sort((a,b)=> (a.hora_objetivo||'').localeCompare(b.hora_objetivo||'') || (+a.orden||0)-(+b.orden||0));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin actividades todavía.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Hora</th><th>Dur.(min)</th><th>Nombre</th><th>Propósito</th><th>Tipo</th><th>Activo</th><th></th></tr></thead><tbody>
+    ${list.map(a=>`<tr>
+      <td>${a.hora_objetivo||'—'}</td><td>${a.duracion_min||'—'}</td><td>${a.nombre}</td><td>${a.proposito||'—'}</td>
+      <td>${a.tipo}${a.unidad?' ('+a.unidad+')':''}</td><td>${a.activo}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionActividad('${a.id}')">✎</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+document.getElementById('btnAgregarActividad').addEventListener('click', ()=>{
+  const nombre = document.getElementById('na_nombre').value.trim();
+  if(!nombre){ alert('El nombre es obligatorio.'); return; }
+  const rec = {
+    id: 'a'+Date.now(), orden: ACTIVIDADES.length+1, nombre,
+    proposito: document.getElementById('na_proposito').value.trim(),
+    detalle: document.getElementById('na_detalle').value.trim(),
+    tipo: document.getElementById('na_tipo').value,
+    unidad: document.getElementById('na_unidad').value.trim(),
+    hora_objetivo: document.getElementById('na_hora').value.trim(),
+    activo: 'Sí',
+    duracion_min: document.getElementById('na_duracion').value.trim()
+  };
+  ACTIVIDADES.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'actividades', record:rec, ts:Date.now()});
+  ['na_nombre','na_proposito','na_detalle','na_unidad','na_hora','na_duracion'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+
+/* ============ EDITAR (genérico: actividades y familia) ============ */
+let editContexto = null;
+function getArrByCollection(collection){
+  if(collection==='actividades') return ACTIVIDADES;
+  if(collection==='familia') return FAMILIA;
+  if(collection==='salud') return SALUD;
+  if(collection==='rutina') return RUTINA;
+  if(collection==='registro_trabajo') return REGISTRO_TRABAJO;
+  return REGISTROS;
+}
+window.abrirEdicionActividad = function(id){ abrirEdicionGenerica('actividades', id); };
+window.abrirEdicionFamilia = function(id){ abrirEdicionGenerica('familia', id); };
+window.abrirEdicionSalud = function(id){ abrirEdicionGenerica('salud', id); };
+window.abrirEdicionRutina = function(id){ abrirEdicionGenerica('rutina', id); };
+window.abrirEdicionTrabajo = function(id){ abrirEdicionGenerica('registro_trabajo', id); };
+function abrirEdicionGenerica(collection, id){
+  const arr = getArrByCollection(collection);
+  const a = arr.find(x=>x.id===id);
+  if(!a) return;
+  editContexto = {id, collection, original:{...a}};
+  document.getElementById('editFields').innerHTML = Object.keys(a).filter(k=>k!=='id').map(k=>{
+    const val = String(a[k]??'').replace(/"/g,'&quot;');
+    if(k==='detalle' || k==='enfoque_estoico'){
+      return `<div><label>${k}</label><textarea rows="3" data-field="${k}">${val}</textarea></div>`;
+    }
+    if(k==='hora_objetivo'){
+      return `<div><label>${k} (hora y minutos)</label><input type="time" data-field="${k}" value="${val}"></div>`;
+    }
+    if(k==='duracion_min' || ['peso','brazo','muslo','pecho','pantorrilla','cuello','cintura','meta_peso','meta_brazo','meta_muslo','meta_pecho','meta_pantorrilla','meta_cuello','meta_cintura'].includes(k)){
+      return `<div><label>${k}</label><input type="number" step="0.1" data-field="${k}" value="${val}"></div>`;
+    }
+    return `<div><label>${k}</label><input type="text" data-field="${k}" value="${val}"></div>`;
+  }).join('');
+  document.getElementById('editOverlay').style.display='flex';
+}
+document.getElementById('editCancelar').addEventListener('click', ()=>{ document.getElementById('editOverlay').style.display='none'; editContexto=null; });
+document.getElementById('editGuardar').addEventListener('click', ()=>{
+  if(!editContexto) return;
+  const arr = getArrByCollection(editContexto.collection);
+  const a = arr.find(x=>x.id===editContexto.id);
+  if(!a) return;
+  const patch = {};
+  document.querySelectorAll('#editFields [data-field]').forEach(inp=>{
+    const k = inp.dataset.field;
+    if(String(editContexto.original[k]??'') !== inp.value) patch[k]=inp.value;
+  });
+  if(Object.keys(patch).length){
+    Object.assign(a, patch);
+    saveLocalCache();
+    encolarOperacion({type:'update', id:a.id, collection:editContexto.collection, record:patch, ts:Date.now()});
+  }
+  document.getElementById('editOverlay').style.display='none';
+  editContexto=null;
+  renderAll();
+});
+
+/* ============ TAB FAMILIA ============ */
+function renderFamilia(){
+  const wrap = document.getElementById('familiaWrap');
+  const fp = document.getElementById('ff_persona').value;
+  const fc = document.getElementById('ff_categoria').value;
+  let list = [...FAMILIA].filter(f=> (!fp || f.persona===fp) && (!fc || f.categoria===fc));
+  list.sort((a,b)=> (b.fecha||'').localeCompare(a.fecha||''));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin observaciones todavía (o ninguna coincide con el filtro).</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Persona</th><th>Categoría</th><th>Detalle</th><th>Enfoque estoico</th><th></th></tr></thead><tbody>
+    ${list.map(f=>`<tr>
+      <td>${f.fecha||'—'}</td><td>${f.persona}</td><td>${f.categoria}</td>
+      <td style="max-width:260px; white-space:pre-wrap;">${f.detalle||'—'}</td>
+      <td style="max-width:220px; white-space:pre-wrap;">${f.enfoque_estoico||'—'}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionFamilia('${f.id}')">✎</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+document.getElementById('ff_persona').addEventListener('change', renderFamilia);
+document.getElementById('ff_categoria').addEventListener('change', renderFamilia);
+document.getElementById('btnAgregarFamilia').addEventListener('click', ()=>{
+  const detalle = document.getElementById('nf_detalle').value.trim();
+  if(!detalle){ alert('El detalle es obligatorio.'); return; }
+  const rec = {
+    id: 'f'+Date.now(),
+    fecha: document.getElementById('nf_fecha').value || getHoy(),
+    persona: document.getElementById('nf_persona').value,
+    categoria: document.getElementById('nf_categoria').value,
+    detalle,
+    enfoque_estoico: document.getElementById('nf_enfoque').value.trim()
+  };
+  FAMILIA.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'familia', record:rec, ts:Date.now()});
+  document.getElementById('nf_detalle').value='';
+  document.getElementById('nf_enfoque').value='';
+  renderAll();
+});
+
+/* ============ TAB HISTORIAL ============ */
+function diasAtras(n){
+  // Ancla en la fecha de HOY según huso Ecuador (misma fuente que getHoy()),
+  // evitando el corrimiento de día que causaba toISOString() en UTC.
+  const arr=[];
+  const [y,m,d] = getHoy().split('-').map(Number);
+  for(let i=0;i<n;i++){
+    const dt = new Date(Date.UTC(y, m-1, d-i, 12));
+    arr.push(dt.toISOString().slice(0,10));
+  }
+  return arr;
+}
+function renderHistorial(){
+  const ventana7 = new Set(diasAtras(7));
+  const ventana30 = new Set(diasAtras(30));
+  const wrap = document.getElementById('historialWrap');
+  if(ACTIVIDADES.length===0){ wrap.innerHTML='<div class="empty">Sin actividades.</div>'; return; }
+  const filas = ACTIVIDADES.map(a=>{
+    const regs = REGISTROS.filter(r=>r.actividad_id===a.id);
+    const r7 = regs.filter(r=>ventana7.has(r.fecha));
+    const r30 = regs.filter(r=>ventana30.has(r.fecha));
+    if(a.tipo==='checkbox'){
+      const pct7 = r7.length ? (r7.filter(r=>r.valor==='Sí').length/r7.length*100) : null;
+      const pct30 = r30.length ? (r30.filter(r=>r.valor==='Sí').length/r30.length*100) : null;
+      return `<tr><td>${a.nombre}</td><td>checkbox</td>
+        <td>${pct7===null?'—':pct7.toFixed(0)+'%'}<div class="bar-track"><div class="bar-fill" style="width:${pct7||0}%"></div></div></td>
+        <td>${pct30===null?'—':pct30.toFixed(0)+'%'}<div class="bar-track"><div class="bar-fill" style="width:${pct30||0}%"></div></div></td>
+        <td>—</td></tr>`;
+    } else {
+      const vals30 = r30.map(r=>+r.valor).filter(v=>!isNaN(v));
+      const prom30 = vals30.length ? (vals30.reduce((a,b)=>a+b,0)/vals30.length) : null;
+      const ordenados = [...regs].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+      const ultima = ordenados.length ? ordenados[ordenados.length-1].valor : null;
+      const previa = ordenados.length>1 ? ordenados[ordenados.length-2].valor : null;
+      let tendencia = '—';
+      if(ultima!==null && previa!==null){ tendencia = (+ultima>+previa) ? '📈 mejoró' : (+ultima<+previa ? '📉 bajó' : '➡️ igual'); }
+      return `<tr><td>${a.nombre}</td><td>numérico (${a.unidad||'—'})</td>
+        <td colspan="2">Promedio 30d: ${prom30===null?'—':prom30.toFixed(1)} · Última marca: ${ultima??'—'}</td>
+        <td>${tendencia}</td></tr>`;
+    }
+  }).join('');
+  wrap.innerHTML = `<table><thead><tr><th>Actividad</th><th>Tipo</th><th>% cumplim. 7d</th><th>% cumplim. 30d</th><th>Tendencia</th></tr></thead><tbody>${filas}</tbody></table>`;
+}
+document.getElementById('btnExportarJamr').addEventListener('click', ()=>{
+  const headers = ['fecha','dia_semana','actividad_id','actividad_nombre','tipo','valor','nota'];
+  const rows = REGISTROS.map(r=>headers.map(h=>r[h]));
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Registros_Diarios');
+  XLSX.writeFile(wb, `jamr_registros_${getHoy()}.xlsx`);
+});
+
+/* ============ TAB SALUD ============ */
+let saludChartInstance = null;
+function renderMetas(){
+  const wrap = document.getElementById('metasWrap');
+  if(SALUD_METAS.length===0){ wrap.innerHTML = '<div class="empty">Sin metas configuradas.</div>'; return; }
+  wrap.innerHTML = SALUD_METAS.map(m=>`
+    <div style="border-bottom:1px dashed var(--line); padding:8px 0;">
+      <b style="color:var(--teal); font-size:12px;">${m.persona}</b>
+      <div class="row3" style="margin-top:4px;">
+        <div><label>Meta peso (kg)</label><input type="number" step="0.1" id="mt_peso_${m.id}" value="${m.meta_peso??''}"></div>
+        <div><label>Brazo (cm)</label><input type="number" step="0.1" id="mt_brazo_${m.id}" value="${m.meta_brazo??''}"></div>
+        <div><label>Muslo (cm)</label><input type="number" step="0.1" id="mt_muslo_${m.id}" value="${m.meta_muslo??''}"></div>
+      </div>
+      <div class="row3">
+        <div><label>Pecho (cm)</label><input type="number" step="0.1" id="mt_pecho_${m.id}" value="${m.meta_pecho??''}"></div>
+        <div><label>Pantorrilla (cm)</label><input type="number" step="0.1" id="mt_pantorrilla_${m.id}" value="${m.meta_pantorrilla??''}"></div>
+        <div><label>Cuello (cm)</label><input type="number" step="0.1" id="mt_cuello_${m.id}" value="${m.meta_cuello??''}"></div>
+      </div>
+      <div class="row3">
+        <div><label>Cintura (cm)</label><input type="number" step="0.1" id="mt_cintura_${m.id}" value="${m.meta_cintura??''}"></div>
+        <div style="align-self:end;"><button class="btn secondary small" style="margin-top:18px;" onclick="guardarMeta('${m.id}')">Guardar meta de ${m.persona}</button></div>
+      </div>
+    </div>
+  `).join('');
+}
+window.guardarMeta = function(id){
+  const m = SALUD_METAS.find(x=>x.id===id);
+  if(!m) return;
+  const campos = ['peso','brazo','muslo','pecho','pantorrilla','cuello','cintura'];
+  const patch = {};
+  campos.forEach(c=>{
+    const el = document.getElementById(`mt_${c}_${id}`);
+    if(el) patch['meta_'+c] = el.value;
+  });
+  Object.assign(m, patch);
+  saveLocalCache();
+  encolarOperacion({type:'update', id:m.id, collection:'salud_metas', record:patch, ts:Date.now()});
+  alert(`Meta de ${m.persona} actualizada.`);
+  renderAll();
+};
+
+function renderSaludTabla(){
+  const wrap = document.getElementById('saludWrap');
+  const fp = document.getElementById('fs_persona').value;
+  let list = [...SALUD].filter(s=> !fp || s.persona===fp);
+  list.sort((a,b)=> (b.fecha||'').localeCompare(a.fecha||''));
+  if(list.length===0){ wrap.innerHTML='<div class="empty">Sin registros todavía.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Persona</th><th>Peso</th><th>Brazo</th><th>Muslo</th><th>Pecho</th><th>Pantorr.</th><th>Cuello</th><th>Cintura</th><th>Nota</th><th></th></tr></thead><tbody>
+    ${list.map(s=>`<tr>
+      <td>${s.fecha||'—'}</td><td>${s.persona}</td><td>${s.peso||'—'}</td><td>${s.brazo||'—'}</td><td>${s.muslo||'—'}</td>
+      <td>${s.pecho||'—'}</td><td>${s.pantorrilla||'—'}</td><td>${s.cuello||'—'}</td><td>${s.cintura||'—'}</td>
+      <td style="max-width:160px; white-space:pre-wrap;">${s.nota||'—'}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionSalud('${s.id}')">✎</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+function renderSaludChart(){
+  const canvas = document.getElementById('saludChart');
+  if(!canvas || typeof Chart==='undefined') return;
+  const porPersona = (p)=> [...SALUD].filter(s=>s.persona===p && s.fecha && s.peso!=='' && s.peso!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const julio = porPersona('Julio');
+  const amor = porPersona('Amor');
+  const fechas = [...new Set([...julio,...amor].map(s=>s.fecha))].sort();
+  if(saludChartInstance){ saludChartInstance.destroy(); }
+  if(fechas.length===0){ return; }
+  saludChartInstance = new Chart(canvas.getContext('2d'), {
+    type:'line',
+    data:{
+      labels: fechas,
+      datasets:[
+        { label:'Julio (kg)', data: fechas.map(f=>{ const r=julio.find(s=>s.fecha===f); return r? +r.peso : null; }), borderColor:'#3b82f6', backgroundColor:'#3b82f6', spanGaps:true, tension:.25 },
+        { label:'Amor (kg)', data: fechas.map(f=>{ const r=amor.find(s=>s.fecha===f); return r? +r.peso : null; }), borderColor:'#22c55e', backgroundColor:'#22c55e', spanGaps:true, tension:.25 }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ labels:{ color:'#605d5d' } } },
+      scales:{
+        x:{ ticks:{ color:'#605d5d', font:{size:10} }, grid:{ color:'#d7d3d3' } },
+        y:{ ticks:{ color:'#605d5d' }, grid:{ color:'#d7d3d3' } }
+      }
+    }
+  });
+}
+function renderSalud(){
+  renderMetas();
+  renderSaludTabla();
+  renderSaludChart();
+}
+document.getElementById('fs_persona').addEventListener('change', renderSaludTabla);
+document.getElementById('btnAgregarSalud').addEventListener('click', ()=>{
+  const peso = document.getElementById('ns_peso').value.trim();
+  const camposMedida = ['brazo','muslo','pecho','pantorrilla','cuello','cintura'].map(c=>document.getElementById('ns_'+c).value.trim());
+  if(!peso && camposMedida.every(v=>!v)){ alert('Ingresa al menos el peso o alguna medida.'); return; }
+  const rec = {
+    id: 's'+Date.now(),
+    fecha: document.getElementById('ns_fecha').value || getHoy(),
+    persona: document.getElementById('ns_persona').value,
+    peso, 
+    brazo: camposMedida[0], muslo: camposMedida[1], pecho: camposMedida[2],
+    pantorrilla: camposMedida[3], cuello: camposMedida[4], cintura: camposMedida[5],
+    nota: document.getElementById('ns_nota').value.trim()
+  };
+  SALUD.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'salud', record:rec, ts:Date.now()});
+  ['ns_peso','ns_brazo','ns_muslo','ns_pecho','ns_pantorrilla','ns_cuello','ns_cintura','ns_nota'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+
+/* ============ TAB RUTINA ============ */
+const DIAS_RUTINA = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo','Lunes a Viernes'];
+function poblarSelectorDias(){
+  const sel = document.getElementById('rt_dia');
+  if(sel.options.length>0) return;
+  const presentes = [...new Set(RUTINA.map(r=>r.dia))];
+  const ordenados = DIAS_RUTINA.filter(d=>presentes.includes(d));
+  sel.innerHTML = ordenados.map(d=>`<option value="${d}">${d}</option>`).join('');
+}
+function renderRutina(){
+  poblarSelectorDias();
+  const dia = document.getElementById('rt_dia').value || document.getElementById('rt_dia').options[0]?.value;
+  const wrap = document.getElementById('rutinaWrap');
+  const list = RUTINA.filter(r=>r.dia===dia).sort((a,b)=>(+a.orden||0)-(+b.orden||0));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin ejercicios para este día.</div>'; return; }
+  const bloques = [...new Set(list.map(r=>r.bloque))];
+  wrap.innerHTML = bloques.map(b=>{
+    const items = list.filter(r=>r.bloque===b);
+    return `<div style="margin-top:14px;">
+      <h3 style="font-size:12px; color:var(--teal); margin-bottom:6px;">${b}</h3>
+      <table><thead><tr><th>Ejercicio</th><th>Series</th><th>Reps/Dur.</th><th>Tempo</th><th>Última marca</th><th>Marca de hoy</th><th></th></tr></thead><tbody>
+      ${items.map(r=>{
+        const tendencia = calcTendencia(r.ultima_marca, r.marca_hoy);
+        return `<tr>
+          <td>${r.ejercicio}${r.descripcion?`<div style="font-size:10.5px; color:var(--text-mute); margin-top:2px;">${r.descripcion}</div>`:''}</td>
+          <td>${r.series||'—'}</td><td>${r.reps_duracion||'—'}</td><td>${r.tempo||'—'}</td>
+          <td>${r.ultima_marca||'—'}</td>
+          <td><input type="text" style="width:90px;" id="rt_marca_${r.id}" value="${r.marca_hoy||''}" placeholder="ej. 25s"></td>
+          <td>${tendencia}</td>
+        </tr>`;
+      }).join('')}
+      </tbody></table>
+    </div>`;
+  }).join('') + `<button class="btn small" id="btnGuardarRutina" style="margin-top:14px;">Guardar marcas de hoy</button>`;
+  document.getElementById('btnGuardarRutina').addEventListener('click', guardarMarcasRutina);
+}
+function calcTendencia(ultima, hoy){
+  if(!ultima || !hoy) return '—';
+  const nu = parseFloat(String(ultima).replace(',','.'));
+  const nh = parseFloat(String(hoy).replace(',','.'));
+  if(isNaN(nu) || isNaN(nh)) return '—';
+  if(nh > nu) return '📈 mejoró';
+  if(nh < nu) return '📉 bajó';
+  return '➡️ igual';
+}
+function guardarMarcasRutina(){
+  const dia = document.getElementById('rt_dia').value;
+  const list = RUTINA.filter(r=>r.dia===dia);
+  let cambios = 0;
+  list.forEach(r=>{
+    const el = document.getElementById('rt_marca_'+r.id);
+    if(!el) return;
+    const nuevo = el.value.trim();
+    if(nuevo && nuevo !== (r.marca_hoy||'')){
+      // la marca de hoy pasa a ser la "última marca" la próxima sesión; por ahora solo guardamos marca_hoy
+      const patch = { marca_hoy: nuevo };
+      if(r.marca_hoy) patch.ultima_marca = r.marca_hoy; // rota la anterior marca_hoy a ultima_marca
+      Object.assign(r, patch);
+      encolarOperacion({type:'update', id:r.id, collection:'rutina', record:patch, ts:Date.now()});
+      cambios++;
+    }
+  });
+  if(cambios>0){ saveLocalCache(); alert(`${cambios} marca(s) guardada(s).`); renderAll(); }
+  else alert('No hay cambios que guardar.');
+}
+function renderMetasRutina(){
+  const wrap = document.getElementById('metasRutinaWrap');
+  if(RUTINA_METAS.length===0){ wrap.innerHTML='<div class="empty">Sin metas cargadas.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Dimensión</th><th>Métrica</th><th>Valor inicial</th><th>Meta Fase 1</th><th>Meta Final</th></tr></thead><tbody>
+    ${RUTINA_METAS.map(m=>`<tr><td>${m.dimension}</td><td>${m.metrica}</td><td>${m.valor_inicial}</td><td>${m.meta_fase1}</td><td><b style="color:var(--teal);">${m.meta_final}</b></td></tr>`).join('')}
+  </tbody></table>`;
+}
+document.getElementById('rt_dia').addEventListener('change', renderRutina);
+
+/* ============ TAB PROMPTS ============ */
+function getFechaLargaEs(){
+  return new Intl.DateTimeFormat('es-EC', { timeZone: TZ_ECUADOR, day:'2-digit', month:'long', year:'numeric' }).format(new Date());
+}
+function renderPrompts(){
+  const wrap = document.getElementById('promptsWrap');
+  const activos = PROMPTS.filter(p=>p.activo==='Sí' || p.activo===true).sort((a,b)=>(+a.orden||0)-(+b.orden||0));
+  if(activos.length===0){ wrap.innerHTML = '<div class="empty">Sin prompts todavía.</div>'; return; }
+  wrap.innerHTML = activos.map(p=>`
+    <div style="border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:10px; background:var(--panel-2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <div>
+          <b style="font-size:13px;">${p.nombre}</b>
+          <div style="font-size:10.5px; color:var(--text-mute);">${p.categoria||''} · ${p.frecuencia||''}</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn secondary small" onclick="copiarPrompt('${p.id}')">Copiar con fecha de hoy</button>
+          <button class="btn secondary small" onclick="togglePromptTexto('${p.id}')">Ver/ocultar</button>
+        </div>
+      </div>
+      <div id="ptxt_${p.id}" style="display:none; margin-top:10px; font-size:11px; white-space:pre-wrap; color:var(--text-dim); max-height:260px; overflow:auto; border-top:1px dashed var(--line); padding-top:8px;">${(p.texto||'').replace(/</g,'&lt;')}</div>
+    </div>
+  `).join('');
+}
+window.togglePromptTexto = function(id){
+  const el = document.getElementById('ptxt_'+id);
+  el.style.display = el.style.display==='none' ? 'block' : 'none';
+};
+window.copiarPrompt = function(id){
+  const p = PROMPTS.find(x=>x.id===id);
+  if(!p) return;
+  const texto = (p.texto||'').replaceAll('{fecha}', getFechaLargaEs());
+  navigator.clipboard.writeText(texto).then(()=>{
+    alert(`"${p.nombre}" copiado con la fecha de hoy (${getFechaLargaEs()}).`);
+  }).catch(()=>{
+    alert('No se pudo copiar automáticamente. Abre el prompt con "Ver/ocultar" y cópialo manualmente.');
+  });
+};
+function poblarSelectPrompts(){
+  const sel = document.getElementById('npr_prompt');
+  const fsel = document.getElementById('fpr_prompt');
+  if(sel.options.length===0){
+    sel.innerHTML = PROMPTS.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
+  }
+  if(fsel.options.length<=1){
+    fsel.innerHTML = '<option value="">Todos</option>' + PROMPTS.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
+  }
+}
+function renderRespuestas(){
+  poblarSelectPrompts();
+  const wrap = document.getElementById('respuestasWrap');
+  const filtroId = document.getElementById('fpr_prompt').value;
+  let list = [...PROMPTS_RESPUESTAS].filter(r=> !filtroId || r.prompt_id===filtroId);
+  list.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin respuestas registradas todavía.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Prompt</th><th>IA</th><th>Respuesta</th></tr></thead><tbody>
+    ${list.map(r=>{
+      const p = PROMPTS.find(x=>x.id===r.prompt_id);
+      return `<tr><td>${r.fecha||'—'}</td><td>${p?p.nombre:r.prompt_id}</td><td>${r.ia_usada||'—'}</td>
+        <td style="max-width:320px; white-space:pre-wrap;">${r.respuesta||'—'}</td></tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+document.getElementById('fpr_prompt').addEventListener('change', renderRespuestas);
+document.getElementById('btnAgregarRespuesta').addEventListener('click', ()=>{
+  const respuesta = document.getElementById('npr_respuesta').value.trim();
+  if(!respuesta){ alert('Escribe al menos un resumen de la respuesta.'); return; }
+  const rec = {
+    id: 'pr'+Date.now(),
+    prompt_id: document.getElementById('npr_prompt').value,
+    fecha: document.getElementById('npr_fecha').value || getHoy(),
+    ia_usada: document.getElementById('npr_ia').value.trim(),
+    respuesta
+  };
+  PROMPTS_RESPUESTAS.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'prompts_respuestas', record:rec, ts:Date.now()});
+  document.getElementById('npr_respuesta').value='';
+  document.getElementById('npr_ia').value='';
+  renderAll();
+});
+
+/* ============ TAB REGISTRO TRABAJO ============ */
+function getFechaHoraEcuador(){
+  const f = new Intl.DateTimeFormat('en-CA', { timeZone: TZ_ECUADOR, year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
+  const h = getHoraActualEcuador();
+  return `${f} ${h}`;
+}
+function renderTrabajo(){
+  const wrap = document.getElementById('trabajoWrap');
+  const list = [...REGISTRO_TRABAJO].sort((a,b)=> (b.fecha_hora||'').localeCompare(a.fecha_hora||''));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin actividades registradas todavía.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Fecha y hora</th><th>Actividad</th><th>Categoría</th><th>Horas</th><th>Entregable</th><th>Nombre y tipo</th><th>Observaciones</th><th></th></tr></thead><tbody>
+    ${list.map(t=>`<tr>
+      <td>${t.fecha_hora||'—'}</td>
+      <td>${t.actividad}</td><td>${t.categoria||'—'}</td><td>${t.duracion_horas||'—'}</td>
+      <td>${t.entregable||'—'}</td><td>${t.nombre_tipo||'—'}</td>
+      <td style="max-width:220px; white-space:pre-wrap;">${t.observaciones||'—'}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionTrabajo('${t.id}')">✎</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+document.getElementById('btnAgregarTrabajo').addEventListener('click', ()=>{
+  const actividad = document.getElementById('nt_actividad').value.trim();
+  if(!actividad){ alert('La actividad es obligatoria.'); return; }
+  const rec = {
+    id: 't'+Date.now(),
+    fecha_hora: getFechaHoraEcuador(),
+    actividad,
+    categoria: document.getElementById('nt_categoria').value.trim(),
+    duracion_horas: document.getElementById('nt_duracion').value.trim(),
+    entregable: document.getElementById('nt_entregable').value.trim(),
+    nombre_tipo: document.getElementById('nt_nombretipo').value.trim(),
+    observaciones: document.getElementById('nt_observaciones').value.trim()
+  };
+  REGISTRO_TRABAJO.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'registro_trabajo', record:rec, ts:Date.now()});
+  ['nt_actividad','nt_categoria','nt_duracion','nt_entregable','nt_nombretipo','nt_observaciones'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+
+/* ============ TAB PENDIENTES E IDEAS ============ */
+function renderMantras(){
+  document.getElementById('mantraAfirmaciones').textContent = AFIRMACIONES_TEXTO;
+  document.getElementById('mantraHimno').textContent = HIMNO_TEXTO;
+}
+function renderPendientes(){
+  const wrap = document.getElementById('pendientesWrap');
+  const list = [...PENDIENTES].sort((a,b)=>{
+    // pendientes primero, ordenados por fecha; cumplidos al final
+    const ca = a.cumplido==='Sí'?1:0, cb = b.cumplido==='Sí'?1:0;
+    if(ca!==cb) return ca-cb;
+    return (a.fecha||'').localeCompare(b.fecha||'');
+  });
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin pendientes.</div>'; return; }
+  wrap.innerHTML = list.map(p=>{
+    const cumplido = p.cumplido==='Sí';
+    return `<div class="actrow" style="${cumplido?'opacity:.55;':''}">
+      <div style="width:24px; text-align:center;"><input type="checkbox" ${cumplido?'checked':''} onchange="togglePendiente('${p.id}', this.checked)"></div>
+      <div class="info"><div class="nombre" style="${cumplido?'text-decoration:line-through;':''}">${p.texto}</div></div>
+      <div style="font-size:11px; color:var(--text-mute); white-space:nowrap; padding:0 8px;">${p.fecha||'sin fecha'}</div>
+      <button class="btn secondary small" onclick="eliminarPendiente('${p.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+window.togglePendiente = function(id, checked){
+  const p = PENDIENTES.find(x=>x.id===id);
+  if(!p) return;
+  p.cumplido = checked ? 'Sí' : 'No';
+  saveLocalCache();
+  encolarOperacion({type:'update', id:p.id, collection:'pendientes', record:{cumplido:p.cumplido}, ts:Date.now()});
+  renderAll();
+};
+window.eliminarPendiente = function(id){
+  if(!confirm('¿Eliminar este pendiente?')) return;
+  PENDIENTES = PENDIENTES.filter(x=>x.id!==id);
+  saveLocalCache();
+  encolarOperacion({type:'delete', id, collection:'pendientes', ts:Date.now()});
+  renderAll();
+};
+document.getElementById('btnAgregarPendiente').addEventListener('click', ()=>{
+  const texto = document.getElementById('np_texto').value.trim();
+  if(!texto){ alert('Escribe el pendiente.'); return; }
+  const rec = { id:'pd'+Date.now(), texto, fecha: document.getElementById('np_fecha').value||'', cumplido:'No' };
+  PENDIENTES.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'pendientes', record:rec, ts:Date.now()});
+  document.getElementById('np_texto').value=''; document.getElementById('np_fecha').value='';
+  renderAll();
+});
+
+function renderIdeas(){
+  const wrap = document.getElementById('ideasWrap');
+  const list = [...IDEAS].sort((a,b)=>(b.fecha_hora||'').localeCompare(a.fecha_hora||''));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin ideas guardadas.</div>'; return; }
+  wrap.innerHTML = list.map(i=>`
+    <div class="actrow">
+      <div class="info">
+        <div class="nombre" style="font-weight:400; white-space:pre-wrap;">${i.texto}</div>
+        <div class="prop">${i.fecha_hora||''}${i.etiqueta?' · '+i.etiqueta:''}</div>
+      </div>
+      <button class="btn secondary small" onclick="eliminarIdea('${i.id}')">✕</button>
+    </div>`).join('');
+}
+window.eliminarIdea = function(id){
+  if(!confirm('¿Eliminar esta idea?')) return;
+  IDEAS = IDEAS.filter(x=>x.id!==id);
+  saveLocalCache();
+  encolarOperacion({type:'delete', id, collection:'ideas', ts:Date.now()});
+  renderAll();
+};
+document.getElementById('btnAgregarIdea').addEventListener('click', ()=>{
+  const texto = document.getElementById('ni_texto').value.trim();
+  if(!texto){ alert('Escribe la idea.'); return; }
+  const rec = { id:'id'+Date.now(), fecha_hora: getFechaHoraEcuador(), texto, etiqueta: document.getElementById('ni_etiqueta').value.trim() };
+  IDEAS.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'ideas', record:rec, ts:Date.now()});
+  document.getElementById('ni_texto').value=''; document.getElementById('ni_etiqueta').value='';
+  renderAll();
+});
+
+/* ============ PRÁCTICA DE RESPIRACIÓN (StoicMensch) ============ */
+(function(){
+  const FRASES = {
+    buteyko: ["Respira por la nariz, suave y silencioso.","Menos aire, no más: deja que el CO₂ trabaje.","Hombros sueltos. Mandíbula floja.","La pausa es entrenamiento, no lucha.","Si aparece tensión, reduce la intensidad."],
+    meditacion: ["Relaja la vista. No enfoques nada con intensidad.","Mira un punto fijo o una zona amplia frente a ti.","Observa la respiración: el aire entra, el aire sale.","Los pensamientos llegan y se van. Vuelve al aire.","Suelta los hombros. Afloja la frente y la mandíbula.","Estás aquí. Solo esta respiración.","Mirada abierta, atención relajada: presencia."],
+    energizante: ["Respira con energía: inhala activo, exhala firme.","Despierta el cuerpo: deja que el ritmo te active.","Mantén la columna erguida y el pecho abierto.","Sostén el ritmo, sin forzar.","Si sientes mareo u hormigueo, detente y respira normal."]
+  };
+  const NIDRA_STEPS = [
+    {t:"Acomoda tu postura. Mirada suave hacia la pantalla. Respira con naturalidad.", d:12},
+    {t:"Sankalpa: formula una intención breve y positiva. Repítela mentalmente tres veces.", d:14},
+    {t:"Lleva la atención a tu mano derecha: palma, dedos, dorso. Solo siente.", d:9},
+    {t:"Sube por el brazo derecho: muñeca, codo, hombro.", d:9},
+    {t:"Siente todo el lado derecho del cuerpo, del hombro al pie.", d:10},
+    {t:"Ahora la mano izquierda: palma, dedos, dorso.", d:9},
+    {t:"Siente el abdomen y el pecho moviéndose con la respiración.", d:9},
+    {t:"Cuello, mandíbula, rostro: afloja cada zona al nombrarla.", d:9},
+    {t:"Siente el cuerpo completo como una sola presencia.", d:10},
+    {t:"Cuenta respiraciones hacia atrás: 10... 9... 8... una por cada exhalación.", d:14},
+    {t:"Visualiza un cielo amplio y despejado. Tu mente, igual de abierta.", d:12},
+    {t:"Repite tu sankalpa tres veces, con convicción serena.", d:12},
+    {t:"Vuelve por completo. Conserva la calma con los ojos abiertos.", d:10}
+  ];
+  const PHASE_SETS = {
+    buteyko:    [{n:'Inspira',d:5,s:1.16},{n:'Sostén',d:5,s:1.16},{n:'Exhala',d:5,s:0.84},{n:'Vacío',d:5,s:0.84}],
+    meditacion: [{n:'Inspira',d:4,s:1.16},{n:'Exhala',d:6,s:0.84}],
+    energizante:[{n:'Inspira',d:2,s:1.12},{n:'Exhala',d:2,s:0.88}]
+  };
+  const TOTALS = {buteyko:15, meditacion:12, energizante:30};
+  const MODOS_LABEL = {buteyko:'Buteyko', meditacion:'Meditación', energizante:'Energizante', nidra:'Yoga Nidra'};
+
+  let R = { mode:'buteyko', phaseIndex:0, secondsLeft:5, cycle:1, guideIdx:0, nidraIdx:0, running:false, paused:false };
+  let respInterval = null;
+  let audioObjectUrl = null;
+
+  function pool(){ return FRASES[R.mode] || FRASES.buteyko; }
+  function selectMode(m){
+    R.mode = m;
+    if(m==='nidra'){ R.nidraIdx=0; R.secondsLeft = NIDRA_STEPS[0].d; }
+    else { R.phaseIndex=0; R.cycle=1; R.guideIdx=0; R.secondsLeft = PHASE_SETS[m][0].d; }
+    R.running=false; R.paused=false;
+    clearInterval(respInterval);
+    document.querySelectorAll('[id^="resp_modo_"]').forEach(b=>b.classList.remove('active'));
+    const btn = document.getElementById('resp_modo_'+m);
+    if(btn) btn.classList.add('active');
+    renderResp();
+  }
+  function tick(){
+    if(!R.running || R.paused) return;
+    R.secondsLeft--;
+    if(R.secondsLeft <= 0){
+      if(R.mode==='nidra'){
+        R.nidraIdx++;
+        if(R.nidraIdx >= NIDRA_STEPS.length){ R.running=false; clearInterval(respInterval); renderResp(); return; }
+        R.secondsLeft = NIDRA_STEPS[R.nidraIdx].d;
+      } else {
+        const set = PHASE_SETS[R.mode];
+        R.phaseIndex++;
+        if(R.phaseIndex >= set.length){
+          R.phaseIndex = 0;
+          R.cycle++;
+          R.guideIdx = (R.guideIdx+1) % pool().length;
+          if(R.cycle > TOTALS[R.mode]){ R.running=false; clearInterval(respInterval); renderResp(); return; }
+        }
+        R.secondsLeft = set[R.phaseIndex].d;
+      }
+    }
+    renderResp();
+  }
+  function renderResp(){
+    const secEl = document.getElementById('resp_segundos');
+    if(!secEl) return; // tab no montado aún
+    let faseLabel, scale, guidance, progress, cyclesLeft, statusText;
+    if(R.mode==='nidra'){
+      const N = NIDRA_STEPS.length, i = R.nidraIdx;
+      faseLabel = `Paso ${i+1}/${N}`;
+      scale = (i%2===0) ? 1.05 : 0.95;
+      guidance = NIDRA_STEPS[i].t;
+      progress = Math.round((i/N)*100);
+      cyclesLeft = `Pasos restantes: ${N-i-1}`;
+    } else {
+      const set = PHASE_SETS[R.mode];
+      const ph = set[R.phaseIndex];
+      faseLabel = ph.n;
+      scale = ph.s;
+      guidance = pool()[R.guideIdx];
+      progress = Math.round(((R.cycle-1)/TOTALS[R.mode])*100);
+      cyclesLeft = `Ciclos restantes: ${TOTALS[R.mode]-R.cycle+1}`;
+    }
+    statusText = !R.running ? 'Listo para empezar' : (R.paused ? `En pausa — ${faseLabel}` : `${faseLabel} — ${R.secondsLeft}s restantes`);
+    secEl.textContent = R.secondsLeft;
+    document.getElementById('resp_fase').textContent = faseLabel;
+    document.getElementById('resp_guia').textContent = guidance;
+    document.getElementById('resp_disco').style.transform = `scale(${scale})`;
+    document.getElementById('resp_progreso_pct').textContent = progress+'%';
+    document.getElementById('resp_progreso_barra').style.width = progress+'%';
+    document.getElementById('resp_estado').textContent = statusText;
+    document.getElementById('resp_restantes').textContent = cyclesLeft;
+    document.getElementById('resp_pausar').textContent = R.paused ? '▶ Reanudar' : '❚❚ Pausar';
+  }
+
+  document.getElementById('resp_modo_buteyko').addEventListener('click', ()=>selectMode('buteyko'));
+  document.getElementById('resp_modo_meditacion').addEventListener('click', ()=>selectMode('meditacion'));
+  document.getElementById('resp_modo_energizante').addEventListener('click', ()=>selectMode('energizante'));
+  document.getElementById('resp_modo_nidra').addEventListener('click', ()=>selectMode('nidra'));
+
+  document.getElementById('resp_iniciar').addEventListener('click', ()=>{
+    R.running = true; R.paused = false;
+    clearInterval(respInterval);
+    respInterval = setInterval(tick, 1000);
+    renderResp();
+  });
+  document.getElementById('resp_pausar').addEventListener('click', ()=>{
+    if(!R.running) return;
+    R.paused = !R.paused;
+    renderResp();
+  });
+  document.getElementById('resp_reiniciar').addEventListener('click', ()=>{
+    clearInterval(respInterval);
+    selectMode(R.mode);
+  });
+
+  /* --- Música: elegir archivo del dispositivo/computadora, reproducir, cambiar --- */
+  const fileInput = document.getElementById('resp_file_input');
+  const audioEl = document.getElementById('resp_audio');
+  const nombreEl = document.getElementById('resp_cancion_nombre');
+  const btnElegir = document.getElementById('resp_elegir_cancion');
+  const btnCambiar = document.getElementById('resp_cambiar_cancion');
+  const btnToggleMusica = document.getElementById('resp_toggle_musica');
+
+  btnElegir.addEventListener('click', ()=> fileInput.click());
+  btnCambiar.addEventListener('click', ()=> fileInput.click());
+
+  fileInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    if(audioObjectUrl) URL.revokeObjectURL(audioObjectUrl);
+    audioObjectUrl = URL.createObjectURL(file);
+    audioEl.src = audioObjectUrl;
+    nombreEl.textContent = file.name;
+    btnElegir.style.display = 'none';
+    btnCambiar.style.display = '';
+    btnToggleMusica.style.display = '';
+    btnToggleMusica.textContent = '▶ Reproducir';
+  });
+
+  btnToggleMusica.addEventListener('click', ()=>{
+    if(audioEl.paused){
+      audioEl.play().catch(()=>{ alert('No se pudo reproducir el archivo seleccionado.'); });
+      btnToggleMusica.textContent = '❚❚ Pausar música';
+    } else {
+      audioEl.pause();
+      btnToggleMusica.textContent = '▶ Reproducir';
+    }
+  });
+
+  // estado inicial
+  document.getElementById('resp_modo_buteyko').classList.add('active');
+  R.secondsLeft = PHASE_SETS.buteyko[0].d;
+  renderResp();
+})();
+
+/* ============ CONFIG / RESET ============ */
+document.getElementById('btnResetLocal').addEventListener('click', async ()=>{
+  if(!confirm('Esto borra TODA la copia local de este dispositivo (las 13 colecciones) y trae de nuevo todo desde el Sheet. ¿Continuar?')) return;
+  ACTIVIDADES = []; REGISTROS = []; FAMILIA = []; RACHAS = []; SALUD = []; SALUD_METAS = [];
+  RUTINA = []; RUTINA_METAS = []; PROMPTS = []; PROMPTS_RESPUESTAS = []; REGISTRO_TRABAJO = [];
+  PENDIENTES = []; IDEAS = []; OUTBOX = [];
+  [LOCAL_ACT_KEY, LOCAL_REG_KEY, LOCAL_FAM_KEY, LOCAL_RACHAS_KEY, LOCAL_SALUD_KEY, LOCAL_METAS_KEY,
+   LOCAL_RUTINA_KEY, LOCAL_RMETAS_KEY, LOCAL_PROMPTS_KEY, LOCAL_PRESP_KEY, LOCAL_TRABAJO_KEY,
+   LOCAL_PEND_KEY, LOCAL_IDEAS_KEY, OUTBOX_KEY].forEach(k=>localStorage.removeItem(k));
+  await syncWithCloud();
+  renderAll();
+  alert('Caché local borrada por completo. Estado actual traído desde el Sheet.\n\nEndpoint activo: '+(ENDPOINT||'(ninguno configurado)'));
+});
+
+/* ============ RENDER ALL / INIT ============ */
+function renderAll(){
+  renderStatus();
+  renderHoy();
+  renderActividades();
+  renderHistorial();
+  renderFamilia();
+  renderRachas();
+  renderSalud();
+  renderRutina();
+  renderMetasRutina();
+  renderPrompts();
+  renderRespuestas();
+  renderTrabajo();
+  renderMantras();
+  renderPendientes();
+  renderIdeas();
+}
+async function loadAll(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* silencioso: no rompe la app si falla */ });
+  }
+  loadLocalCache();
+  document.getElementById('nf_fecha').value = getHoy();
+  document.getElementById('ns_fecha').value = getHoy();
+  document.getElementById('npr_fecha').value = getHoy();
+  renderAll();
+  ensureEndpoint();
+  await syncWithCloud();
+  renderAll();
+}
+loadAll();
+</script>
+</body>
+</html>
