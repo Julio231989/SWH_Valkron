@@ -118,7 +118,10 @@
   <button data-tab="trabajo">07 · Registro Trabajo</button>
   <button data-tab="pendientes">08 · Pendientes</button>
   <button data-tab="respiracion">09 · Respiración</button>
-  <button data-tab="config">10 · Config</button>
+  <button data-tab="oratoria">10 · Oratoria</button>
+  <button data-tab="referenciar">11 · Referencia R</button>
+  <button data-tab="economia">12 · Economía</button>
+  <button data-tab="config">13 · Config</button>
 </nav>
 
 <!-- TAB: HOY -->
@@ -279,7 +282,13 @@
 <section id="tab-rutina" class="tabpanel" style="display:none;">
   <div class="panel">
     <h2><span class="n">05</span>Entrenamiento — rutina semanal</h2>
-    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Lunes = Empuje + Skill Handstand · Miércoles = Tracción + Skill Muscle-up · resto de días igual que antes. "Marca de hoy" queda como "última marca" la próxima vez que la edites, para ver tendencia.</p>
+
+    <div class="rule-card" style="border-color:var(--amber); background:color-mix(in srgb, var(--amber) 10%, var(--bg));">
+      <h3 style="color:var(--amber);">⚠ Regla de respaldo — sin excusas</h3>
+      <p style="font-size:12px; line-height:1.6; color:var(--text-dim);">Si por lo que sea no puedo hacer la rutina del día: <b>100 burpees (10 series × 10 repeticiones)</b>. Aumentar la progresión (más series, menos descanso, más velocidad) conforme el cuerpo se adapte — filosofía Cris Heria: nunca cero, siempre algo, sube la exigencia cuando ya no cueste.</p>
+    </div>
+
+    <p style="color:var(--text-mute); font-size:11px; margin:10px 0;">Lunes = Empuje + Skill Handstand · Miércoles = Tracción + Skill Muscle-up · resto de días igual que antes. "Marca de hoy" queda como "última marca" la próxima vez que la edites, para ver tendencia.</p>
 
     <label>Día</label>
     <select id="rt_dia"></select>
@@ -443,10 +452,83 @@
   </div>
 </section>
 
+<!-- TAB: ORATORIA -->
+<section id="tab-oratoria" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">10</span>Oratoria — práctica del Dojo</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">El contenido del curso vive en NotebookLM (Dojo de Retórica StoicMensch). Aquí solo registras que practicaste, para ver avance y no perder el hilo entre sesiones.</p>
+
+    <fieldset>
+      <legend>Nueva sesión</legend>
+      <div class="row3">
+        <div><label>Fecha</label><input type="date" id="no_fecha"></div>
+        <div style="flex:2;"><label>Módulo del Dojo</label><input type="text" id="no_modulo" placeholder="ej. Improvisación, Storytelling corporativo..."></div>
+        <div><label>Minutos</label><input type="number" id="no_minutos"></div>
+      </div>
+      <div class="row2">
+        <div><label>Autoevaluación (1-5)</label><input type="number" min="1" max="5" id="no_autoeval"></div>
+        <div><label>Logro de hoy</label><input type="text" id="no_logro"></div>
+      </div>
+      <label>Siguiente paso (qué retomar la próxima sesión)</label>
+      <input type="text" id="no_siguiente">
+      <button class="btn small" id="btnAgregarOratoria" style="margin-top:10px;">Guardar sesión</button>
+    </fieldset>
+
+    <div id="oratoriaResumen" style="margin:14px 0; font-size:12px; color:var(--text-dim);"></div>
+    <div class="table-wrap" id="oratoriaWrap"></div>
+  </div>
+</section>
+
+<!-- TAB: REFERENCIA R -->
+<section id="tab-referenciar" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">11</span>Referencia R — biblioteca offline</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Snippets de tu archivo maestro R, para consulta rápida sin tener que buscar en el documento completo.</p>
+
+    <label>Filtrar por categoría</label>
+    <select id="fr_categoria"><option value="">Todas</option></select>
+    <input type="text" id="fr_buscar" placeholder="Buscar por título o código..." style="margin-top:8px;">
+    <div id="referenciaRWrap" style="margin-top:12px;"></div>
+
+    <fieldset style="margin-top:18px;">
+      <legend>Agregar snippet</legend>
+      <div class="row2">
+        <div><label>Categoría</label><input type="text" id="nr_categoria" placeholder="ej. 07 Cruces y tabulados"></div>
+        <div><label>Título</label><input type="text" id="nr_titulo"></div>
+      </div>
+      <label>Código</label>
+      <textarea id="nr_codigo" rows="5" style="font-family:monospace; font-size:11.5px;"></textarea>
+      <label>Nota (opcional)</label>
+      <input type="text" id="nr_nota">
+      <button class="btn small" id="btnAgregarReferenciaR" style="margin-top:10px;">Guardar snippet</button>
+    </fieldset>
+  </div>
+</section>
+
+<!-- TAB: ECONOMIA -->
+<section id="tab-economia" class="tabpanel" style="display:none;">
+  <div class="panel">
+    <h2><span class="n">12</span>Economía — materias y resúmenes</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Repaso rápido por materia. Agrega, edita o elimina según avances en la carrera.</p>
+
+    <input type="text" id="fe_buscar" placeholder="Buscar materia...">
+    <div id="economiaWrap" style="margin-top:12px;"></div>
+
+    <fieldset style="margin-top:18px;">
+      <legend>Agregar materia</legend>
+      <label>Materia</label>
+      <input type="text" id="ne_materia">
+      <label>Resumen</label>
+      <textarea id="ne_resumen" rows="4"></textarea>
+      <button class="btn small" id="btnAgregarEconomia" style="margin-top:10px;">Guardar materia</button>
+    </fieldset>
+  </div>
+</section>
+
 <!-- TAB: CONFIG -->
 <section id="tab-config" class="tabpanel" style="display:none;">
   <div class="panel">
-    <h2><span class="n">10</span>Config</h2>
+    <h2><span class="n">13</span>Config</h2>
     <div class="rule-card discard">
       <h3>Zona de pruebas / limpieza</h3>
       <p>Si haces un registro de prueba y quieres borrarlo: elimínalo primero en el Sheet, luego usa este botón para que este dispositivo olvide su copia local.</p>
@@ -500,6 +582,9 @@ const LOCAL_PRESP_KEY = 'jamr_local_prompts_resp_v1';
 const LOCAL_TRABAJO_KEY = 'jamr_local_trabajo_v1';
 const LOCAL_PEND_KEY = 'jamr_local_pendientes_v1';
 const LOCAL_IDEAS_KEY = 'jamr_local_ideas_v1';
+const LOCAL_ORATORIA_KEY = 'jamr_local_oratoria_v1';
+const LOCAL_REFR_KEY = 'jamr_local_referenciar_v1';
+const LOCAL_ECON_KEY = 'jamr_local_economia_v1';
 const OUTBOX_KEY = 'jamr_outbox_v1';
 
 let ENDPOINT = localStorage.getItem(ENDPOINT_KEY) || '';
@@ -516,25 +601,26 @@ let PROMPTS_RESPUESTAS = [];
 let REGISTRO_TRABAJO = [];
 let PENDIENTES = [];
 let IDEAS = [];
+let ORATORIA = [];
+let REFERENCIA_R = [];
+let ECONOMIA = [];
 let OUTBOX = [];
 
 const AFIRMACIONES_TEXTO = `Soy un hombre. Soy un hombre. Levántate y sé un hombre.
-
 La vida es implacable, pero más implacable debe ser mi determinación.
 Debo tomar las decisiones difíciles. Hacer los sacrificios necesarios.
 Poseo una fuerza interior que me impulsa a prevalecer y superar mis propios límites.
 Soy un titán, un depredador, un animal que persigue la excelencia en todas las áreas de la vida.
-Respira profundamente hacia el cerebro, deja que circule por todo tu cuerpo:
-Inteligencia, estado de flujo, eustrés, fuerza, poder y salud
 
-Me digo a mi mismo:
+Respira profundamente hacia el cerebro, deja que circule por todo tu cuerpo:
+Inteligencia, estado de flujo, eustrés, fuerza, poder y salud.
+Me digo a mí mismo:
 1. Yo elijo mi respuesta
-2. La virtud esta aquí
+2. La virtud está aquí
 3. Hoy es lo que más importa
 4. Soy suficiente
 5. Suelto el control (haz lo mejor con lo que está en tu poder, y lo demás acéptalo como viene)
-
-Valkron: Sin emoción, solo ejecución`;
+Valkron: Sin emoción, solo ejecución.`;
 
 const HIMNO_TEXTO = `Hoy despierto como el sol que hiende la penumbra,
 guerrero forjado en el yunque de la infortunada cuna,
@@ -554,7 +640,6 @@ cada ocaso eleva mi férrea presencia.
 
 No pretendo vencer a otros en vano,
 sólo forjarme mejor que mi ser humano.
-
 El yunque del tiempo golpea sin tregua,
 mas mi voluntad, titán, la tormenta ruega;
 cada caída, lección de hierro y honor,
@@ -574,6 +659,7 @@ Valkron, mi mantra, mi escudo y mi lanza,
 dos sílabas santas, mi última instancia;
 valor para actuar sin miedo ni duda,
 dominio del tiempo, certeza absoluta.
+
 Sin prisa ni pausa, sin emoción vana,
 sólo la acción justa, precisa y templada.
 Valkron me libera de humana flaqueza,
@@ -583,13 +669,14 @@ Goal Hunter, Valkron es mi nombre,
 fría es mi mano donde arde el hombre;
 no persigo pérdida ni fortuna ciega,
 mi regla es la espada que jamás se entrega.
+
 Ocho son mis flechas, ninguna es capricho,
 el checklist mi escudo, la paciencia mi nicho;
 si el día no ofrece batalla certera,
 envaino el acero y el alba me espera.
+
 No es el azar quien rige mi apuesta:
 es la disciplina quien gana la gesta.
-
 SCAMPER mis límites, Kaizen mi sendero,
 Active Recall afila mi acero,
 Pomodoro marca mi avance certero,
@@ -597,7 +684,6 @@ Space Repetition templa mi verbo sincero.
 
 Austero ante el oro, firme ante el miedo,
 cada moneda es cimiento y no anhelo.
-
 Templado en la fragua de adversidad,
 forjo mi sino con férrea tenacidad;
 mi espíritu es titán, sereno y valiente.
@@ -609,7 +695,6 @@ mi voluntad se eleva, inquebrantable y real.
 
 Los callos que surcan mi carne y mi mente
 son laureles de guerra, escudo viviente.
-
 En la danza eterna de creación,
 renazco sublime en cada ascensión:
 hoy, como siempre, mi esfuerzo es mi himno,
@@ -652,6 +737,9 @@ function loadLocalCache(){
   try{ const s = localStorage.getItem(LOCAL_TRABAJO_KEY); if(s) REGISTRO_TRABAJO = JSON.parse(s); }catch(e){}
   try{ const s = localStorage.getItem(LOCAL_PEND_KEY); if(s) PENDIENTES = JSON.parse(s); }catch(e){}
   try{ const s = localStorage.getItem(LOCAL_IDEAS_KEY); if(s) IDEAS = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_ORATORIA_KEY); if(s) ORATORIA = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_REFR_KEY); if(s) REFERENCIA_R = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_ECON_KEY); if(s) ECONOMIA = JSON.parse(s); }catch(e){}
   try{ const s = localStorage.getItem(OUTBOX_KEY); if(s) OUTBOX = JSON.parse(s); }catch(e){}
 }
 function saveLocalCache(){
@@ -668,6 +756,9 @@ function saveLocalCache(){
   localStorage.setItem(LOCAL_TRABAJO_KEY, JSON.stringify(REGISTRO_TRABAJO));
   localStorage.setItem(LOCAL_PEND_KEY, JSON.stringify(PENDIENTES));
   localStorage.setItem(LOCAL_IDEAS_KEY, JSON.stringify(IDEAS));
+  localStorage.setItem(LOCAL_ORATORIA_KEY, JSON.stringify(ORATORIA));
+  localStorage.setItem(LOCAL_REFR_KEY, JSON.stringify(REFERENCIA_R));
+  localStorage.setItem(LOCAL_ECON_KEY, JSON.stringify(ECONOMIA));
   localStorage.setItem(OUTBOX_KEY, JSON.stringify(OUTBOX));
 }
 function encolarOperacion(op){ OUTBOX.push(op); saveLocalCache(); flushOutbox(); }
@@ -725,7 +816,10 @@ async function syncWithCloud(){
   const ok11 = await syncCollection('registro_trabajo', ()=>REGISTRO_TRABAJO, (m)=>{REGISTRO_TRABAJO=m;});
   const ok12 = await syncCollection('pendientes', ()=>PENDIENTES, (m)=>{PENDIENTES=m;});
   const ok13 = await syncCollection('ideas', ()=>IDEAS, (m)=>{IDEAS=m;});
-  if(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9 && ok10 && ok11 && ok12 && ok13) lastSyncError='';
+  const ok14 = await syncCollection('oratoria', ()=>ORATORIA, (m)=>{ORATORIA=m;});
+  const ok15 = await syncCollection('referencia_r', ()=>REFERENCIA_R, (m)=>{REFERENCIA_R=m;});
+  const ok16 = await syncCollection('economia', ()=>ECONOMIA, (m)=>{ECONOMIA=m;});
+  if(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9 && ok10 && ok11 && ok12 && ok13 && ok14 && ok15 && ok16) lastSyncError='';
   saveLocalCache();
   await flushOutbox();
   renderAll();
@@ -939,6 +1033,9 @@ function getArrByCollection(collection){
   if(collection==='salud') return SALUD;
   if(collection==='rutina') return RUTINA;
   if(collection==='registro_trabajo') return REGISTRO_TRABAJO;
+  if(collection==='oratoria') return ORATORIA;
+  if(collection==='referencia_r') return REFERENCIA_R;
+  if(collection==='economia') return ECONOMIA;
   return REGISTROS;
 }
 window.abrirEdicionActividad = function(id){ abrirEdicionGenerica('actividades', id); };
@@ -1625,15 +1722,141 @@ document.getElementById('btnAgregarIdea').addEventListener('click', ()=>{
   renderResp();
 })();
 
+/* ============ TAB ORATORIA ============ */
+function renderOratoria(){
+  const wrap = document.getElementById('oratoriaWrap');
+  const list = [...ORATORIA].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  const totalMin = ORATORIA.reduce((s,o)=> s + (parseFloat(o.minutos)||0), 0);
+  document.getElementById('oratoriaResumen').textContent = `${ORATORIA.length} sesión(es) registradas · ${totalMin} minutos acumulados`;
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin sesiones todavía.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Módulo</th><th>Min.</th><th>Autoeval.</th><th>Logro</th><th>Siguiente paso</th><th></th></tr></thead><tbody>
+    ${list.map(o=>`<tr>
+      <td>${o.fecha||'—'}</td><td>${o.modulo_dojo||'—'}</td><td>${o.minutos||'—'}</td><td>${o.autoevaluacion||'—'}</td>
+      <td style="max-width:180px; white-space:pre-wrap;">${o.logro||'—'}</td>
+      <td style="max-width:180px; white-space:pre-wrap;">${o.siguiente_paso||'—'}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionOratoria('${o.id}')">✎</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+window.abrirEdicionOratoria = function(id){ abrirEdicionGenerica('oratoria', id); };
+document.getElementById('btnAgregarOratoria').addEventListener('click', ()=>{
+  const modulo = document.getElementById('no_modulo').value.trim();
+  if(!modulo){ alert('Indica qué módulo del Dojo trabajaste.'); return; }
+  const rec = {
+    id: 'or'+Date.now(),
+    fecha: document.getElementById('no_fecha').value || getHoy(),
+    modulo_dojo: modulo,
+    minutos: document.getElementById('no_minutos').value.trim(),
+    autoevaluacion: document.getElementById('no_autoeval').value.trim(),
+    logro: document.getElementById('no_logro').value.trim(),
+    siguiente_paso: document.getElementById('no_siguiente').value.trim()
+  };
+  ORATORIA.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'oratoria', record:rec, ts:Date.now()});
+  ['no_modulo','no_minutos','no_autoeval','no_logro','no_siguiente'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+
+/* ============ TAB REFERENCIA R ============ */
+function poblarSelectCategoriasR(){
+  const sel = document.getElementById('fr_categoria');
+  const actuales = new Set([...sel.options].map(o=>o.value));
+  const categorias = [...new Set(REFERENCIA_R.map(r=>r.categoria))].sort();
+  categorias.forEach(c=>{ if(!actuales.has(c)){ const op=document.createElement('option'); op.value=c; op.textContent=c; sel.appendChild(op); } });
+}
+function renderReferenciaR(){
+  poblarSelectCategoriasR();
+  const wrap = document.getElementById('referenciaRWrap');
+  const cat = document.getElementById('fr_categoria').value;
+  const buscar = document.getElementById('fr_buscar').value.trim().toLowerCase();
+  let list = [...REFERENCIA_R].filter(r=> (!cat || r.categoria===cat) &&
+    (!buscar || (r.titulo||'').toLowerCase().includes(buscar) || (r.codigo||'').toLowerCase().includes(buscar)));
+  list.sort((a,b)=>(+a.orden||0)-(+b.orden||0));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin snippets que coincidan.</div>'; return; }
+  wrap.innerHTML = list.map(r=>`
+    <div style="border:1px solid var(--line); border-radius:0; padding:10px 12px; margin-bottom:8px; background:var(--panel-2);">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div>
+          <b style="font-size:12.5px;">${r.titulo}</b>
+          <div style="font-size:10px; color:var(--text-mute); text-transform:uppercase; letter-spacing:.06em;">${r.categoria}</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn secondary small" onclick="copiarSnippetR('${r.id}')">Copiar código</button>
+          <button class="btn secondary small" onclick="abrirEdicionReferenciaR('${r.id}')">✎</button>
+        </div>
+      </div>
+      <pre style="margin-top:8px; font-size:11px; white-space:pre-wrap; color:var(--text-dim); overflow-x:auto;">${(r.codigo||'').replace(/</g,'&lt;')}</pre>
+      ${r.nota?`<div style="font-size:10.5px; color:var(--amber); margin-top:4px;">⚠ ${r.nota}</div>`:''}
+    </div>
+  `).join('');
+}
+window.copiarSnippetR = function(id){
+  const r = REFERENCIA_R.find(x=>x.id===id);
+  if(!r) return;
+  navigator.clipboard.writeText(r.codigo||'').then(()=>alert(`"${r.titulo}" copiado.`)).catch(()=>alert('No se pudo copiar automáticamente.'));
+};
+window.abrirEdicionReferenciaR = function(id){ abrirEdicionGenerica('referencia_r', id); };
+window.abrirEdicionEconomia = function(id){ abrirEdicionGenerica('economia', id); };
+document.getElementById('fr_categoria').addEventListener('change', renderReferenciaR);
+document.getElementById('fr_buscar').addEventListener('input', renderReferenciaR);
+document.getElementById('btnAgregarReferenciaR').addEventListener('click', ()=>{
+  const titulo = document.getElementById('nr_titulo').value.trim();
+  const codigo = document.getElementById('nr_codigo').value.trim();
+  if(!titulo || !codigo){ alert('Título y código son obligatorios.'); return; }
+  const rec = {
+    id: 'rr'+Date.now(),
+    orden: REFERENCIA_R.length+1,
+    categoria: document.getElementById('nr_categoria').value.trim() || 'Sin categoría',
+    titulo, codigo,
+    nota: document.getElementById('nr_nota').value.trim()
+  };
+  REFERENCIA_R.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'referencia_r', record:rec, ts:Date.now()});
+  ['nr_categoria','nr_titulo','nr_codigo','nr_nota'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+
+/* ============ TAB ECONOMIA ============ */
+function renderEconomia(){
+  const wrap = document.getElementById('economiaWrap');
+  const buscar = document.getElementById('fe_buscar').value.trim().toLowerCase();
+  let list = [...ECONOMIA].filter(e => !buscar || (e.materia||'').toLowerCase().includes(buscar) || (e.resumen||'').toLowerCase().includes(buscar));
+  list.sort((a,b)=>(+a.orden||0)-(+b.orden||0));
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin materias que coincidan.</div>'; return; }
+  wrap.innerHTML = list.map(e=>`
+    <div style="border:1px solid var(--line); border-radius:0; padding:10px 12px; margin-bottom:8px; background:var(--panel-2);">
+      <div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">
+        <b style="font-size:12.5px;">${e.materia}</b>
+        <button class="btn secondary small" onclick="abrirEdicionEconomia('${e.id}')">✎</button>
+      </div>
+      <p style="margin-top:6px; font-size:11.5px; line-height:1.6; color:var(--text-dim);">${(e.resumen||'').replace(/</g,'&lt;')}</p>
+    </div>
+  `).join('');
+}
+document.getElementById('fe_buscar').addEventListener('input', renderEconomia);
+document.getElementById('btnAgregarEconomia').addEventListener('click', ()=>{
+  const materia = document.getElementById('ne_materia').value.trim();
+  const resumen = document.getElementById('ne_resumen').value.trim();
+  if(!materia || !resumen){ alert('Materia y resumen son obligatorios.'); return; }
+  const rec = { id:'ec'+Date.now(), orden: ECONOMIA.length+1, materia, resumen };
+  ECONOMIA.push(rec);
+  saveLocalCache();
+  encolarOperacion({type:'create', collection:'economia', record:rec, ts:Date.now()});
+  document.getElementById('ne_materia').value=''; document.getElementById('ne_resumen').value='';
+  renderAll();
+});
+
 /* ============ CONFIG / RESET ============ */
 document.getElementById('btnResetLocal').addEventListener('click', async ()=>{
-  if(!confirm('Esto borra TODA la copia local de este dispositivo (las 13 colecciones) y trae de nuevo todo desde el Sheet. ¿Continuar?')) return;
+  if(!confirm('Esto borra TODA la copia local de este dispositivo (las 16 colecciones) y trae de nuevo todo desde el Sheet. ¿Continuar?')) return;
   ACTIVIDADES = []; REGISTROS = []; FAMILIA = []; RACHAS = []; SALUD = []; SALUD_METAS = [];
   RUTINA = []; RUTINA_METAS = []; PROMPTS = []; PROMPTS_RESPUESTAS = []; REGISTRO_TRABAJO = [];
-  PENDIENTES = []; IDEAS = []; OUTBOX = [];
+  PENDIENTES = []; IDEAS = []; ORATORIA = []; REFERENCIA_R = []; ECONOMIA = []; OUTBOX = [];
   [LOCAL_ACT_KEY, LOCAL_REG_KEY, LOCAL_FAM_KEY, LOCAL_RACHAS_KEY, LOCAL_SALUD_KEY, LOCAL_METAS_KEY,
    LOCAL_RUTINA_KEY, LOCAL_RMETAS_KEY, LOCAL_PROMPTS_KEY, LOCAL_PRESP_KEY, LOCAL_TRABAJO_KEY,
-   LOCAL_PEND_KEY, LOCAL_IDEAS_KEY, OUTBOX_KEY].forEach(k=>localStorage.removeItem(k));
+   LOCAL_PEND_KEY, LOCAL_IDEAS_KEY, LOCAL_ORATORIA_KEY, LOCAL_REFR_KEY, LOCAL_ECON_KEY, OUTBOX_KEY].forEach(k=>localStorage.removeItem(k));
   await syncWithCloud();
   renderAll();
   alert('Caché local borrada por completo. Estado actual traído desde el Sheet.\n\nEndpoint activo: '+(ENDPOINT||'(ninguno configurado)'));
@@ -1656,6 +1879,9 @@ function renderAll(){
   renderMantras();
   renderPendientes();
   renderIdeas();
+  renderOratoria();
+  renderReferenciaR();
+  renderEconomia();
 }
 async function loadAll(){
   if('serviceWorker' in navigator){
@@ -1665,6 +1891,7 @@ async function loadAll(){
   document.getElementById('nf_fecha').value = getHoy();
   document.getElementById('ns_fecha').value = getHoy();
   document.getElementById('npr_fecha').value = getHoy();
+  document.getElementById('no_fecha').value = getHoy();
   renderAll();
   ensureEndpoint();
   await syncWithCloud();
