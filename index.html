@@ -230,15 +230,16 @@
 <section id="tab-salud" class="tabpanel" style="display:none;">
   <div class="panel">
     <h2><span class="n">04</span>Salud — peso y medidas</h2>
-    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Julio y Amor. Una fila por fecha — llena solo el peso, o también las medidas si tomaste circunferencias ese día.</p>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Control semanal de tu peso. Una fila por fecha — llena solo el peso, o también las medidas si tomaste circunferencias ese día.</p>
+
+    <div id="saludResumen" style="margin-bottom:12px; padding:10px 12px; border-left:3px solid var(--teal); background:var(--panel-2); font-size:12px; line-height:1.6;"></div>
 
     <canvas id="saludChart" height="90" style="margin-bottom:16px;"></canvas>
 
     <fieldset>
       <legend>Nuevo registro</legend>
-      <div class="row3">
+      <div class="row2">
         <div><label>Fecha</label><input type="date" id="ns_fecha"></div>
-        <div><label>Persona</label><select id="ns_persona"><option value="Julio">Julio</option><option value="Amor">Amor</option></select></div>
         <div><label>Peso (kg)</label><input type="number" step="0.1" id="ns_peso"></div>
       </div>
       <div class="row3">
@@ -261,9 +262,7 @@
       <div id="metasWrap"></div>
     </fieldset>
 
-    <label style="margin-top:16px;">Filtrar por persona</label>
-    <select id="fs_persona"><option value="">Todas</option><option value="Julio">Julio</option><option value="Amor">Amor</option></select>
-    <div class="table-wrap" id="saludWrap" style="margin-top:10px;"></div>
+    <div class="table-wrap" id="saludWrap" style="margin-top:16px;"></div>
 
     <div class="rule-card" style="margin-top:16px;">
       <h3>Referencia — composición corporal a 94 kg (Julio)</h3>
@@ -716,12 +715,22 @@ async function apiGet(action, params={}){
   if(!ENDPOINT) throw new Error('sin endpoint');
   const url = new URL(ENDPOINT); url.searchParams.set('action', action);
   Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
-  const res = await fetch(url.toString()); return res.json();
+  const res = await fetch(url.toString()); return leerJsonSeguro(res);
 }
 async function apiPost(payload){
   if(!ENDPOINT) throw new Error('sin endpoint');
   const res = await fetch(ENDPOINT, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
-  return res.json();
+  return leerJsonSeguro(res);
+}
+async function leerJsonSeguro(res){
+  const txt = await res.text();
+  try{ return JSON.parse(txt); }
+  catch(e){
+    const pareceHtml = txt.trim().startsWith('<');
+    throw new Error(pareceHtml
+      ? 'El servidor devolvió una página HTML, no datos. Revisa en Config que la URL termine en /exec y que el Web App tenga acceso "Cualquier usuario"; si usas varias cuentas de Google en este navegador, prueba en una ventana de incógnito.'
+      : 'Respuesta del servidor no válida: '+txt.slice(0,80));
+  }
 }
 function loadLocalCache(){
   try{ const s = localStorage.getItem(LOCAL_ACT_KEY); if(s) ACTIVIDADES = JSON.parse(s); }catch(e){}
@@ -780,12 +789,13 @@ async function flushOutbox(){
   if(err) lastSyncError = err;
   OUTBOX = siguen; saveLocalCache(); syncing = false; renderAll();
 }
+let syncFallos = [];
 async function syncCollection(collection, getArr, setArr){
   let cloud;
   try{ cloud = await apiGet('list', {collection}); }
-  catch(e){ lastSyncError = `[${collection}] `+((e&&e.message)?e.message:String(e)); return false; }
+  catch(e){ syncFallos.push({collection, msg:(e&&e.message)?e.message:String(e)}); return false; }
   if(!Array.isArray(cloud)){
-    lastSyncError = `[${collection}] El servidor respondió con un error: `+(cloud && cloud.error ? cloud.error : JSON.stringify(cloud));
+    syncFallos.push({collection, msg:'El servidor respondió con un error: '+(cloud && cloud.error ? cloud.error : JSON.stringify(cloud))});
     return false;
   }
   const current = getArr();
@@ -803,6 +813,7 @@ async function syncCollection(collection, getArr, setArr){
 }
 async function syncWithCloud(){
   if(!ENDPOINT){ lastSyncError = 'No hay URL del Web App configurada en este dispositivo.'; return; }
+  syncFallos = [];
   const ok1 = await syncCollection('actividades', ()=>ACTIVIDADES, (m)=>{ACTIVIDADES=m;});
   const ok2 = await syncCollection('registros', ()=>REGISTROS, (m)=>{REGISTROS=m;});
   const ok3 = await syncCollection('familia', ()=>FAMILIA, (m)=>{FAMILIA=m;});
@@ -819,7 +830,14 @@ async function syncWithCloud(){
   const ok14 = await syncCollection('oratoria', ()=>ORATORIA, (m)=>{ORATORIA=m;});
   const ok15 = await syncCollection('referencia_r', ()=>REFERENCIA_R, (m)=>{REFERENCIA_R=m;});
   const ok16 = await syncCollection('economia', ()=>ECONOMIA, (m)=>{ECONOMIA=m;});
-  if(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7 && ok8 && ok9 && ok10 && ok11 && ok12 && ok13 && ok14 && ok15 && ok16) lastSyncError='';
+  const TOTAL_COLS = 16;
+  if(syncFallos.length === 0){ lastSyncError = ''; }
+  else {
+    const primero = syncFallos[0].msg.slice(0,230);
+    lastSyncError = (syncFallos.length >= TOTAL_COLS)
+      ? 'No se pudo leer ninguna colección del servidor. '+primero
+      : syncFallos.length+' de '+TOTAL_COLS+' colecciones fallaron ('+syncFallos.map(f=>f.collection).join(', ')+'). '+primero;
+  }
   saveLocalCache();
   await flushOutbox();
   renderAll();
@@ -1178,8 +1196,9 @@ document.getElementById('btnExportarJamr').addEventListener('click', ()=>{
 let saludChartInstance = null;
 function renderMetas(){
   const wrap = document.getElementById('metasWrap');
-  if(SALUD_METAS.length===0){ wrap.innerHTML = '<div class="empty">Sin metas configuradas.</div>'; return; }
-  wrap.innerHTML = SALUD_METAS.map(m=>`
+  const metasJulio = SALUD_METAS.filter(m=>m.persona==='Julio');
+  if(metasJulio.length===0){ wrap.innerHTML = '<div class="empty">Sin metas configuradas.</div>'; return; }
+  wrap.innerHTML = metasJulio.map(m=>`
     <div style="border-bottom:1px dashed var(--line); padding:8px 0;">
       <b style="color:var(--teal); font-size:12px;">${m.persona}</b>
       <div class="row3" style="margin-top:4px;">
@@ -1217,13 +1236,12 @@ window.guardarMeta = function(id){
 
 function renderSaludTabla(){
   const wrap = document.getElementById('saludWrap');
-  const fp = document.getElementById('fs_persona').value;
-  let list = [...SALUD].filter(s=> !fp || s.persona===fp);
+  let list = [...SALUD].filter(s=> s.persona==='Julio');
   list.sort((a,b)=> (b.fecha||'').localeCompare(a.fecha||''));
   if(list.length===0){ wrap.innerHTML='<div class="empty">Sin registros todavía.</div>'; return; }
-  wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Persona</th><th>Peso</th><th>Brazo</th><th>Muslo</th><th>Pecho</th><th>Pantorr.</th><th>Cuello</th><th>Cintura</th><th>Nota</th><th></th></tr></thead><tbody>
+  wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Peso</th><th>Brazo</th><th>Muslo</th><th>Pecho</th><th>Pantorr.</th><th>Cuello</th><th>Cintura</th><th>Nota</th><th></th></tr></thead><tbody>
     ${list.map(s=>`<tr>
-      <td>${s.fecha||'—'}</td><td>${s.persona}</td><td>${s.peso||'—'}</td><td>${s.brazo||'—'}</td><td>${s.muslo||'—'}</td>
+      <td>${s.fecha||'—'}</td><td>${s.peso||'—'}</td><td>${s.brazo||'—'}</td><td>${s.muslo||'—'}</td>
       <td>${s.pecho||'—'}</td><td>${s.pantorrilla||'—'}</td><td>${s.cuello||'—'}</td><td>${s.cintura||'—'}</td>
       <td style="max-width:160px; white-space:pre-wrap;">${s.nota||'—'}</td>
       <td><button class="btn secondary small" onclick="abrirEdicionSalud('${s.id}')">✎</button></td>
@@ -1235,8 +1253,7 @@ function renderSaludChart(){
   if(!canvas || typeof Chart==='undefined') return;
   const porPersona = (p)=> [...SALUD].filter(s=>s.persona===p && s.fecha && s.peso!=='' && s.peso!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const julio = porPersona('Julio');
-  const amor = porPersona('Amor');
-  const fechas = [...new Set([...julio,...amor].map(s=>s.fecha))].sort();
+  const fechas = julio.map(s=>s.fecha);
   if(saludChartInstance){ saludChartInstance.destroy(); }
   if(fechas.length===0){ return; }
   saludChartInstance = new Chart(canvas.getContext('2d'), {
@@ -1244,8 +1261,7 @@ function renderSaludChart(){
     data:{
       labels: fechas,
       datasets:[
-        { label:'Julio (kg)', data: fechas.map(f=>{ const r=julio.find(s=>s.fecha===f); return r? +r.peso : null; }), borderColor:'#3b82f6', backgroundColor:'#3b82f6', spanGaps:true, tension:.25 },
-        { label:'Amor (kg)', data: fechas.map(f=>{ const r=amor.find(s=>s.fecha===f); return r? +r.peso : null; }), borderColor:'#22c55e', backgroundColor:'#22c55e', spanGaps:true, tension:.25 }
+        { label:'Peso (kg)', data: julio.map(r=>+r.peso), borderColor:'#3b82f6', backgroundColor:'#3b82f6', spanGaps:true, tension:.25 }
       ]
     },
     options:{
@@ -1258,12 +1274,36 @@ function renderSaludChart(){
     }
   });
 }
+function sumarDiasFecha(fechaStr, n){
+  const [y,m,d] = fechaStr.split('-').map(Number);
+  return new Date(Date.UTC(y, m-1, d+n, 12)).toISOString().slice(0,10);
+}
+function renderSaludResumen(){
+  const el = document.getElementById('saludResumen');
+  const pesos = SALUD.filter(s=>s.persona==='Julio' && s.fecha && s.peso!=='' && s.peso!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  if(pesos.length===0){ el.textContent = 'Aún no hay pesajes. Registra el primero abajo.'; return; }
+  const ult = pesos[pesos.length-1];
+  const meta = SALUD_METAS.find(m=>m.persona==='Julio');
+  const metaPeso = meta && meta.meta_peso!=='' && meta.meta_peso!=null ? parseFloat(meta.meta_peso) : null;
+  const proximo = sumarDiasFecha(ult.fecha, 7);
+  const hoy = getHoy();
+  const toca = hoy >= proximo;
+  let linea1 = `<b>Último peso:</b> ${ult.peso} kg (${ult.fecha})`;
+  if(metaPeso!==null && !isNaN(metaPeso)){
+    const dif = metaPeso - parseFloat(ult.peso);
+    linea1 += ` · <b>Meta:</b> ${metaPeso} kg · ` + (dif>0 ? `faltan ${dif.toFixed(1)} kg` : `meta alcanzada (${Math.abs(dif).toFixed(1)} kg por encima)`);
+  }
+  const linea2 = toca
+    ? `<span style="color:var(--amber);"><b>Toca pesarse hoy</b> (el último pesaje fue hace 7 días o más).</span>`
+    : `Próximo pesaje: ${proximo}`;
+  el.innerHTML = linea1 + '<br>' + linea2;
+}
 function renderSalud(){
   renderMetas();
+  renderSaludResumen();
   renderSaludTabla();
   renderSaludChart();
 }
-document.getElementById('fs_persona').addEventListener('change', renderSaludTabla);
 document.getElementById('btnAgregarSalud').addEventListener('click', ()=>{
   const peso = document.getElementById('ns_peso').value.trim();
   const camposMedida = ['brazo','muslo','pecho','pantorrilla','cuello','cintura'].map(c=>document.getElementById('ns_'+c).value.trim());
@@ -1271,7 +1311,7 @@ document.getElementById('btnAgregarSalud').addEventListener('click', ()=>{
   const rec = {
     id: 's'+Date.now(),
     fecha: document.getElementById('ns_fecha').value || getHoy(),
-    persona: document.getElementById('ns_persona').value,
+    persona: 'Julio',
     peso, 
     brazo: camposMedida[0], muslo: camposMedida[1], pecho: camposMedida[2],
     pantorrilla: camposMedida[3], cuello: camposMedida[4], cintura: camposMedida[5],
