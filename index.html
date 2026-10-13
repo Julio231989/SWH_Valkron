@@ -142,6 +142,7 @@
 <section id="tab-actividades" class="tabpanel" style="display:none;">
   <div class="panel">
     <h2><span class="n">01</span>Actividades</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin:8px 0 10px;">También puedes editarlas en la hoja «Actividades» del Sheet: cambia <b>nombre</b>, <b>hora_objetivo</b> (texto «HH:MM»), <b>orden</b> o pon <b>activo</b> en «No» para ocultarla de Hoy. La lista se ordena por hora y, a igual hora, por orden. Una fila que borres en el Sheet desaparece de la app en la siguiente sincronización (≤ 45 s).</p>
     <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Tu rutina completa. Editar/desactivar no borra el historial ya registrado.</p>
     <div class="table-wrap" id="actividadesWrap"></div>
 
@@ -289,6 +290,12 @@
 
     <p style="color:var(--text-mute); font-size:11px; margin:10px 0;">Lunes = Empuje + Skill Handstand · Miércoles = Tracción + Skill Muscle-up · resto de días igual que antes. "Marca de hoy" queda como "última marca" la próxima vez que la edites, para ver tendencia.</p>
 
+    <div class="rule-card" style="margin:10px 0;">
+      <h3 style="color:var(--teal);">Pantorrillas — lunes, miércoles y sábado por la mañana</h3>
+      <p style="font-size:12px; line-height:1.6; color:var(--text-dim);">8 series por sesión, 15–25 min. Termina cada serie con 1–2 repeticiones de reserva, sin llegar al fallo. Cuando hagas 20 repeticiones en todas las series unilaterales con recorrido completo, añade una mochila con carga moderada: cambia <b>una</b> variable a la vez. Si la prioridad del día son dominadas o flexiones, haz eso primero y las pantorrillas después. Mide la circunferencia cada 2–4 semanas en la pestaña Salud. Si aparece dolor en el Aquiles o en el dedo gordo, reduce el volumen. Mantén esta estructura cuatro semanas antes de cambiarla.</p>
+      <button class="btn small" id="btnPlanPantorrillas" style="margin-top:8px;">Añadir plan de pantorrillas a mi rutina</button>
+    </div>
+
     <label>Día</label>
     <select id="rt_dia"></select>
     <div id="rutinaWrap" style="margin-top:10px;"></div>
@@ -406,6 +413,10 @@
       <button class="btn secondary small" id="resp_modo_energizante" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Energizante</button>
       <button class="btn secondary small" id="resp_modo_nidra" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Yoga Nidra</button>
     </div>
+    <div class="row2" style="margin-bottom:16px;">
+      <button class="btn secondary small" id="resp_modo_calma" style="flex:1; border-color:rgba(20,18,16,.30); border-color:color-mix(in srgb, var(--bg) 30%, transparent); color:var(--bg);">Calma rápida (~2 min)</button>
+    </div>
+    <p style="font-size:11px; line-height:1.5; color:color-mix(in srgb, var(--bg) 70%, transparent); margin:-6px 0 16px;">¿Estrés agudo? <b>Calma rápida</b>: dos inspiraciones nasales seguidas (la segunda, corta) y una exhalación larga por la boca. Dos minutos bastan. ¿Para dormir o soltar el día? Yoga Nidra. ¿Entrenar la tolerancia al estrés a diario? Buteyko por la mañana.</p>
 
     <!-- Música -->
     <div style="background:color-mix(in srgb, var(--bg) 8%, var(--text)); border:1px solid color-mix(in srgb, var(--bg) 20%, transparent); border-radius:0; padding:14px 16px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
@@ -448,6 +459,26 @@
       <div style="flex:1; padding:12px 14px; background:color-mix(in srgb, var(--bg) 6%, var(--text)); border-left:3px solid var(--teal); border-radius:0; text-align:center; font-size:13px; color:color-mix(in srgb, var(--bg) 85%, transparent);" id="resp_estado">Listo para empezar</div>
       <div style="flex:1; padding:12px 14px; background:color-mix(in srgb, var(--bg) 6%, var(--text)); border-left:3px solid var(--teal); border-radius:0; text-align:center; font-size:13px; color:color-mix(in srgb, var(--bg) 85%, transparent);" id="resp_restantes">—</div>
     </div>
+  </div>
+
+  <div class="panel" style="margin-top:14px;">
+    <h2><span class="n">09b</span>Registro de estrés</h2>
+    <p style="color:var(--text-mute); font-size:11px; margin-bottom:10px;">Anota el nivel antes y, si practicaste una técnica, el nivel después. Con unas semanas de datos verás qué técnica te baja más el estrés y a qué horas se concentra.</p>
+    <fieldset>
+      <legend>Nuevo registro</legend>
+      <div class="row3">
+        <div><label>Nivel ahora (0–10)</label><input type="number" min="0" max="10" step="1" id="es_antes"></div>
+        <div><label>Disparador</label><select id="es_disparador"><option>Trabajo / plazos</option><option>Familia</option><option>Dinero</option><option>Salud / cuerpo</option><option>Exceso de tareas</option><option>Sin motivo claro</option><option>Otro</option></select></div>
+        <div><label>Técnica</label><select id="es_tecnica"><option value="">Ninguna aún</option><option>Calma rápida</option><option>Buteyko</option><option>Meditación</option><option>Energizante</option><option>Yoga Nidra</option><option>Caminata</option><option>Ejercicio</option></select></div>
+      </div>
+      <div class="row3">
+        <div><label>Nivel después (0–10, opcional)</label><input type="number" min="0" max="10" step="1" id="es_despues"></div>
+        <div style="flex:2;"><label>Nota</label><input type="text" id="es_nota" placeholder="ej. reunión con retraso de entregables"></div>
+      </div>
+      <button class="btn small" id="btnAgregarEstres" style="margin-top:10px;">Guardar registro</button>
+    </fieldset>
+    <div id="estresResumen" style="margin:14px 0; font-size:12px; line-height:1.6;"></div>
+    <div id="estresWrap"></div>
   </div>
 </section>
 
@@ -553,6 +584,8 @@
 <script>
 /* ============ FECHA / HUSO HORARIO ECUADOR ============ */
 const TZ_ECUADOR = 'America/Guayaquil';
+/* Escapa texto del usuario antes de meterlo en innerHTML (evita que un texto con < o " rompa la página o ejecute código). */
+function esc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function getHoy(){
   return new Intl.DateTimeFormat('en-CA', { timeZone: TZ_ECUADOR, year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
 }
@@ -584,6 +617,8 @@ const LOCAL_IDEAS_KEY = 'jamr_local_ideas_v1';
 const LOCAL_ORATORIA_KEY = 'jamr_local_oratoria_v1';
 const LOCAL_REFR_KEY = 'jamr_local_referenciar_v1';
 const LOCAL_ECON_KEY = 'jamr_local_economia_v1';
+const LOCAL_ESTRES_KEY = 'jamr_local_estres_v1';
+const TOKEN_KEY = 'jamr_token_v1';
 const OUTBOX_KEY = 'jamr_outbox_v1';
 
 let ENDPOINT = localStorage.getItem(ENDPOINT_KEY) || '';
@@ -603,6 +638,10 @@ let IDEAS = [];
 let ORATORIA = [];
 let REFERENCIA_R = [];
 let ECONOMIA = [];
+let ESTRES = [];
+let TOKEN = '';
+try{ TOKEN = localStorage.getItem(TOKEN_KEY) || ''; }catch(e){}
+let SERVER_V2 = false; // true cuando el Apps Script desplegado ya conoce la colección «estres»
 let OUTBOX = [];
 
 const AFIRMACIONES_TEXTO = `Soy un hombre. Soy un hombre. Levántate y sé un hombre.
@@ -708,6 +747,13 @@ function ensureEndpoint(force=false){
   if(!ENDPOINT || force){
     const url = prompt('Pega la URL del Web App de Apps Script (Deploy > Web app):', ENDPOINT||'');
     if(url && url.trim()){ ENDPOINT = url.trim(); localStorage.setItem(ENDPOINT_KEY, ENDPOINT); }
+    if(force){
+      const t = prompt('Token de acceso (déjalo vacío si el servidor no usa token; escribe - para borrar el guardado):', TOKEN ? '(ya guardado)' : '');
+      if(t !== null && t.trim() && t.trim() !== '(ya guardado)'){
+        TOKEN = t.trim() === '-' ? '' : t.trim();
+        try{ if(TOKEN) localStorage.setItem(TOKEN_KEY, TOKEN); else localStorage.removeItem(TOKEN_KEY); }catch(e){}
+      }
+    }
   }
   return ENDPOINT;
 }
@@ -715,17 +761,23 @@ async function apiGet(action, params={}){
   if(!ENDPOINT) throw new Error('sin endpoint');
   const url = new URL(ENDPOINT); url.searchParams.set('action', action);
   Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  if(TOKEN) url.searchParams.set('token', TOKEN);
   const res = await fetch(url.toString()); return leerJsonSeguro(res);
 }
 async function apiPost(payload){
   if(!ENDPOINT) throw new Error('sin endpoint');
-  const res = await fetch(ENDPOINT, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
+  const res = await fetch(ENDPOINT, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(TOKEN ? Object.assign({token:TOKEN}, payload) : payload)});
   return leerJsonSeguro(res);
 }
 async function leerJsonSeguro(res){
   const txt = await res.text();
-  try{ return JSON.parse(txt); }
+  try{
+    const obj = JSON.parse(txt);
+    if(obj && !Array.isArray(obj) && obj.error === 'no autorizado') throw new Error('NO_AUTORIZADO');
+    return obj;
+  }
   catch(e){
+    if(e && e.message === 'NO_AUTORIZADO') throw new Error('El servidor rechazó el token. En Config > «Servidor» vuelve a ingresar el token de acceso.');
     const pareceHtml = txt.trim().startsWith('<');
     throw new Error(pareceHtml
       ? 'El servidor devolvió una página HTML, no datos. Revisa en Config que la URL termine en /exec y que el Web App tenga acceso "Cualquier usuario"; si usas varias cuentas de Google en este navegador, prueba en una ventana de incógnito.'
@@ -749,26 +801,37 @@ function loadLocalCache(){
   try{ const s = localStorage.getItem(LOCAL_ORATORIA_KEY); if(s) ORATORIA = JSON.parse(s); }catch(e){}
   try{ const s = localStorage.getItem(LOCAL_REFR_KEY); if(s) REFERENCIA_R = JSON.parse(s); }catch(e){}
   try{ const s = localStorage.getItem(LOCAL_ECON_KEY); if(s) ECONOMIA = JSON.parse(s); }catch(e){}
+  try{ const s = localStorage.getItem(LOCAL_ESTRES_KEY); if(s) ESTRES = JSON.parse(s); }catch(e){}
   try{ const s = localStorage.getItem(OUTBOX_KEY); if(s) OUTBOX = JSON.parse(s); }catch(e){}
 }
 function saveLocalCache(){
-  localStorage.setItem(LOCAL_ACT_KEY, JSON.stringify(ACTIVIDADES));
-  localStorage.setItem(LOCAL_REG_KEY, JSON.stringify(REGISTROS));
-  localStorage.setItem(LOCAL_FAM_KEY, JSON.stringify(FAMILIA));
-  localStorage.setItem(LOCAL_RACHAS_KEY, JSON.stringify(RACHAS));
-  localStorage.setItem(LOCAL_SALUD_KEY, JSON.stringify(SALUD));
-  localStorage.setItem(LOCAL_METAS_KEY, JSON.stringify(SALUD_METAS));
-  localStorage.setItem(LOCAL_RUTINA_KEY, JSON.stringify(RUTINA));
-  localStorage.setItem(LOCAL_RMETAS_KEY, JSON.stringify(RUTINA_METAS));
-  localStorage.setItem(LOCAL_PROMPTS_KEY, JSON.stringify(PROMPTS));
-  localStorage.setItem(LOCAL_PRESP_KEY, JSON.stringify(PROMPTS_RESPUESTAS));
-  localStorage.setItem(LOCAL_TRABAJO_KEY, JSON.stringify(REGISTRO_TRABAJO));
-  localStorage.setItem(LOCAL_PEND_KEY, JSON.stringify(PENDIENTES));
-  localStorage.setItem(LOCAL_IDEAS_KEY, JSON.stringify(IDEAS));
-  localStorage.setItem(LOCAL_ORATORIA_KEY, JSON.stringify(ORATORIA));
-  localStorage.setItem(LOCAL_REFR_KEY, JSON.stringify(REFERENCIA_R));
-  localStorage.setItem(LOCAL_ECON_KEY, JSON.stringify(ECONOMIA));
-  localStorage.setItem(OUTBOX_KEY, JSON.stringify(OUTBOX));
+  // Cada clave va aparte: si una falla (cuota llena, modo privado), las demás igual se guardan
+  // y la app no se rompe a mitad de una operación.
+  const pares = [
+    [LOCAL_ACT_KEY, ACTIVIDADES],
+    [LOCAL_REG_KEY, REGISTROS],
+    [LOCAL_FAM_KEY, FAMILIA],
+    [LOCAL_RACHAS_KEY, RACHAS],
+    [LOCAL_SALUD_KEY, SALUD],
+    [LOCAL_METAS_KEY, SALUD_METAS],
+    [LOCAL_RUTINA_KEY, RUTINA],
+    [LOCAL_RMETAS_KEY, RUTINA_METAS],
+    [LOCAL_PROMPTS_KEY, PROMPTS],
+    [LOCAL_PRESP_KEY, PROMPTS_RESPUESTAS],
+    [LOCAL_TRABAJO_KEY, REGISTRO_TRABAJO],
+    [LOCAL_PEND_KEY, PENDIENTES],
+    [LOCAL_IDEAS_KEY, IDEAS],
+    [LOCAL_ORATORIA_KEY, ORATORIA],
+    [LOCAL_REFR_KEY, REFERENCIA_R],
+    [LOCAL_ECON_KEY, ECONOMIA],
+    [LOCAL_ESTRES_KEY, ESTRES],
+    [OUTBOX_KEY, OUTBOX]
+  ];
+  let fallo = false;
+  for(const [k,v] of pares){
+    try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ fallo = true; }
+  }
+  if(fallo && !window.__avisoCuota){ window.__avisoCuota = true; console.warn("Valkron: no se pudo guardar parte de la caché local."); }
 }
 function encolarOperacion(op){ OUTBOX.push(op); saveLocalCache(); flushOutbox(); }
 
@@ -781,16 +844,20 @@ async function flushOutbox(){
   for(const op of pendientes){
     try{
       const collection = op.collection || 'registros';
-      if(op.type==='create') await apiPost({action:'create', collection, record:op.record});
-      else if(op.type==='update') await apiPost({action:'update', collection, id:op.id, record:op.record});
-      else if(op.type==='delete') await apiPost({action:'delete', collection, id:op.id});
+      if(collection==='estres' && !SERVER_V2){ siguen.push(op); continue; } // servidor antiguo: no escribir en otra hoja
+      let res;
+      if(op.type==='create') res = await apiPost({action:'create', collection, record:op.record});
+      else if(op.type==='update') res = await apiPost({action:'update', collection, id:op.id, record:op.record});
+      else if(op.type==='delete') res = await apiPost({action:'delete', collection, id:op.id});
+      // Error del servidor (no «id no encontrado», que trae ok:false y no se arregla reintentando): conservar la operación.
+      if(res && res.error && res.ok !== false) throw new Error('El servidor respondió: '+res.error);
     }catch(e){ siguen.push(op); err = (e&&e.message)?e.message:String(e); }
   }
   if(err) lastSyncError = err;
   OUTBOX = siguen; saveLocalCache(); syncing = false; renderAll();
 }
 let syncFallos = [];
-async function syncCollection(collection, getArr, setArr){
+async function syncCollection(collection, getArr, setArr, opts={}){
   let cloud;
   try{ cloud = await apiGet('list', {collection}); }
   catch(e){ syncFallos.push({collection, msg:(e&&e.message)?e.message:String(e)}); return false; }
@@ -801,7 +868,15 @@ async function syncCollection(collection, getArr, setArr){
   const current = getArr();
   const cloudIds = new Set(cloud.map(r=>r.id));
   const merged = [...cloud];
-  current.forEach(local=>{ if(!cloudIds.has(local.id)) merged.push(local); });
+  // Pendientes de crear en la cola: esos NO se consideran borrados desde el Sheet.
+  const pendientesCrear = new Set(OUTBOX.filter(op=>op.collection===collection && op.type==='create').map(op=>op.id || (op.record&&op.record.id)));
+  current.forEach(local=>{
+    if(cloudIds.has(local.id)) return;
+    // Actividades: si la fila ya no está en el Sheet y no está pendiente de subir, se borró allí → se quita aquí.
+    // (Solo si la nube devolvió algo, para no vaciar la app ante una hoja vacía por error.)
+    if(opts.borrarSiFaltaEnNube && cloud.length>0 && !pendientesCrear.has(local.id)) return;
+    merged.push(local);
+  });
   OUTBOX.forEach(op=>{
     if(op.collection===collection && op.type==='update'){
       const t = merged.find(r=>r.id===op.id);
@@ -814,7 +889,10 @@ async function syncCollection(collection, getArr, setArr){
 async function syncWithCloud(){
   if(!ENDPOINT){ lastSyncError = 'No hay URL del Web App configurada en este dispositivo.'; return; }
   syncFallos = [];
-  const ok1 = await syncCollection('actividades', ()=>ACTIVIDADES, (m)=>{ACTIVIDADES=m;});
+  if(!SERVER_V2){
+    try{ const v = await apiGet('version'); SERVER_V2 = !!(v && v.version>=2); }catch(e){ SERVER_V2 = false; }
+  }
+  const ok1 = await syncCollection('actividades', ()=>ACTIVIDADES, (m)=>{ACTIVIDADES=m;}, {borrarSiFaltaEnNube:true});
   const ok2 = await syncCollection('registros', ()=>REGISTROS, (m)=>{REGISTROS=m;});
   const ok3 = await syncCollection('familia', ()=>FAMILIA, (m)=>{FAMILIA=m;});
   const ok4 = await syncCollection('rachas', ()=>RACHAS, (m)=>{RACHAS=m;});
@@ -830,7 +908,16 @@ async function syncWithCloud(){
   const ok14 = await syncCollection('oratoria', ()=>ORATORIA, (m)=>{ORATORIA=m;});
   const ok15 = await syncCollection('referencia_r', ()=>REFERENCIA_R, (m)=>{REFERENCIA_R=m;});
   const ok16 = await syncCollection('economia', ()=>ECONOMIA, (m)=>{ECONOMIA=m;});
-  const TOTAL_COLS = 16;
+  if(SERVER_V2){
+    const okE = await syncCollection('estres', ()=>ESTRES, (m)=>{ESTRES=m;});
+    if(okE){ // lo anotado mientras el servidor era antiguo se sube ahora (create es idempotente)
+      ESTRES.filter(e=>e.__pend).forEach(e=>{
+        const r = Object.assign({}, e); delete r.__pend; delete e.__pend;
+        OUTBOX.push({type:'create', collection:'estres', record:r, ts:Date.now()});
+      });
+    }
+  }
+  const TOTAL_COLS = 16 + (SERVER_V2 ? 1 : 0);
   if(syncFallos.length === 0){ lastSyncError = ''; }
   else {
     const primero = syncFallos[0].msg.slice(0,230);
@@ -917,15 +1004,15 @@ function renderHoy(){
     const clases = ['actrow', a.id===idActual?'current':'', cumplida?'cumplida':''].filter(Boolean).join(' ');
     if(a.tipo==='numerico'){
       return `<div class="${clases}">
-        <div class="hora">${a.hora_objetivo||'—'}</div>
-        <div class="info"><div class="nombre">${a.nombre}</div><div class="prop">${a.proposito||''}</div></div>
-        <div class="valcol"><input type="number" id="hoy_${a.id}" value="${val}" placeholder="${a.unidad||''}" onchange="guardarActividadHoy('${a.id}')"></div>
+        <div class="hora">${esc(a.hora_objetivo||'—')}</div>
+        <div class="info"><div class="nombre">${esc(a.nombre)}</div><div class="prop">${esc(a.proposito||'')}</div></div>
+        <div class="valcol"><input type="number" id="hoy_${esc(a.id)}" value="${val}" placeholder="${esc(a.unidad||'')}" onchange="guardarActividadHoy('${esc(a.id)}')"></div>
       </div>`;
     }
     return `<div class="${clases}">
-      <div class="hora">${a.hora_objetivo||'—'}</div>
-      <div class="info"><div class="nombre">${a.nombre}</div><div class="prop">${a.proposito||''}</div></div>
-      <div class="valcol" style="text-align:center;"><input type="checkbox" id="hoy_${a.id}" ${val==='Sí'?'checked':''} onchange="guardarActividadHoy('${a.id}')"></div>
+      <div class="hora">${esc(a.hora_objetivo||'—')}</div>
+      <div class="info"><div class="nombre">${esc(a.nombre)}</div><div class="prop">${esc(a.proposito||'')}</div></div>
+      <div class="valcol" style="text-align:center;"><input type="checkbox" id="hoy_${esc(a.id)}" ${val==='Sí'?'checked':''} onchange="guardarActividadHoy('${esc(a.id)}')"></div>
     </div>`;
   }).join('');
 }
@@ -995,8 +1082,8 @@ function renderRachas(){
     const dias = diasDesde(r.fecha_ultimo);
     return `<div class="racha-card">
       <div class="num">${dias===null?'—':dias}</div>
-      <div class="lbl">días ${RACHA_LABELS[r.tipo]||r.tipo} (desde ${r.fecha_ultimo||'—'})</div>
-      <button class="btn secondary small" style="margin-top:8px;" onclick="recalibrarRacha('${r.id}')">Recaída hoy — reiniciar</button>
+      <div class="lbl">días ${RACHA_LABELS[r.tipo]||r.tipo} (desde ${esc(r.fecha_ultimo||'—')})</div>
+      <button class="btn secondary small" style="margin-top:8px;" onclick="recalibrarRacha('${esc(r.id)}')">Recaída hoy — reiniciar</button>
     </div>`;
   }).join('');
 }
@@ -1017,9 +1104,9 @@ function renderActividades(){
   if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin actividades todavía.</div>'; return; }
   wrap.innerHTML = `<table><thead><tr><th>Hora</th><th>Dur.(min)</th><th>Nombre</th><th>Propósito</th><th>Tipo</th><th>Activo</th><th></th></tr></thead><tbody>
     ${list.map(a=>`<tr>
-      <td>${a.hora_objetivo||'—'}</td><td>${a.duracion_min||'—'}</td><td>${a.nombre}</td><td>${a.proposito||'—'}</td>
-      <td>${a.tipo}${a.unidad?' ('+a.unidad+')':''}</td><td>${a.activo}</td>
-      <td><button class="btn secondary small" onclick="abrirEdicionActividad('${a.id}')">✎</button></td>
+      <td>${esc(a.hora_objetivo||'—')}</td><td>${esc(a.duracion_min||'—')}</td><td>${esc(a.nombre)}</td><td>${esc(a.proposito||'—')}</td>
+      <td>${esc(a.tipo)}${a.unidad?' ('+a.unidad+')':''}</td><td>${esc(a.activo)}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionActividad('${esc(a.id)}')">✎</button></td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -1054,6 +1141,7 @@ function getArrByCollection(collection){
   if(collection==='oratoria') return ORATORIA;
   if(collection==='referencia_r') return REFERENCIA_R;
   if(collection==='economia') return ECONOMIA;
+  if(collection==='estres') return ESTRES;
   return REGISTROS;
 }
 window.abrirEdicionActividad = function(id){ abrirEdicionGenerica('actividades', id); };
@@ -1112,10 +1200,10 @@ function renderFamilia(){
   if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin observaciones todavía (o ninguna coincide con el filtro).</div>'; return; }
   wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Persona</th><th>Categoría</th><th>Detalle</th><th>Enfoque estoico</th><th></th></tr></thead><tbody>
     ${list.map(f=>`<tr>
-      <td>${f.fecha||'—'}</td><td>${f.persona}</td><td>${f.categoria}</td>
-      <td style="max-width:260px; white-space:pre-wrap;">${f.detalle||'—'}</td>
-      <td style="max-width:220px; white-space:pre-wrap;">${f.enfoque_estoico||'—'}</td>
-      <td><button class="btn secondary small" onclick="abrirEdicionFamilia('${f.id}')">✎</button></td>
+      <td>${esc(f.fecha||'—')}</td><td>${esc(f.persona)}</td><td>${esc(f.categoria)}</td>
+      <td style="max-width:260px; white-space:pre-wrap;">${esc(f.detalle||'—')}</td>
+      <td style="max-width:220px; white-space:pre-wrap;">${esc(f.enfoque_estoico||'—')}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionFamilia('${esc(f.id)}')">✎</button></td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -1164,7 +1252,7 @@ function renderHistorial(){
     if(a.tipo==='checkbox'){
       const pct7 = r7.length ? (r7.filter(r=>r.valor==='Sí').length/r7.length*100) : null;
       const pct30 = r30.length ? (r30.filter(r=>r.valor==='Sí').length/r30.length*100) : null;
-      return `<tr><td>${a.nombre}</td><td>checkbox</td>
+      return `<tr><td>${esc(a.nombre)}</td><td>checkbox</td>
         <td>${pct7===null?'—':pct7.toFixed(0)+'%'}<div class="bar-track"><div class="bar-fill" style="width:${pct7||0}%"></div></div></td>
         <td>${pct30===null?'—':pct30.toFixed(0)+'%'}<div class="bar-track"><div class="bar-fill" style="width:${pct30||0}%"></div></div></td>
         <td>—</td></tr>`;
@@ -1176,7 +1264,7 @@ function renderHistorial(){
       const previa = ordenados.length>1 ? ordenados[ordenados.length-2].valor : null;
       let tendencia = '—';
       if(ultima!==null && previa!==null){ tendencia = (+ultima>+previa) ? '📈 mejoró' : (+ultima<+previa ? '📉 bajó' : '➡️ igual'); }
-      return `<tr><td>${a.nombre}</td><td>numérico (${a.unidad||'—'})</td>
+      return `<tr><td>${esc(a.nombre)}</td><td>numérico (${esc(a.unidad||'—')})</td>
         <td colspan="2">Promedio 30d: ${prom30===null?'—':prom30.toFixed(1)} · Última marca: ${ultima??'—'}</td>
         <td>${tendencia}</td></tr>`;
     }
@@ -1200,20 +1288,20 @@ function renderMetas(){
   if(metasJulio.length===0){ wrap.innerHTML = '<div class="empty">Sin metas configuradas.</div>'; return; }
   wrap.innerHTML = metasJulio.map(m=>`
     <div style="border-bottom:1px dashed var(--line); padding:8px 0;">
-      <b style="color:var(--teal); font-size:12px;">${m.persona}</b>
+      <b style="color:var(--teal); font-size:12px;">${esc(m.persona)}</b>
       <div class="row3" style="margin-top:4px;">
-        <div><label>Meta peso (kg)</label><input type="number" step="0.1" id="mt_peso_${m.id}" value="${m.meta_peso??''}"></div>
-        <div><label>Brazo (cm)</label><input type="number" step="0.1" id="mt_brazo_${m.id}" value="${m.meta_brazo??''}"></div>
-        <div><label>Muslo (cm)</label><input type="number" step="0.1" id="mt_muslo_${m.id}" value="${m.meta_muslo??''}"></div>
+        <div><label>Meta peso (kg)</label><input type="number" step="0.1" id="mt_peso_${esc(m.id)}" value="${esc(m.meta_peso??'')}"></div>
+        <div><label>Brazo (cm)</label><input type="number" step="0.1" id="mt_brazo_${esc(m.id)}" value="${esc(m.meta_brazo??'')}"></div>
+        <div><label>Muslo (cm)</label><input type="number" step="0.1" id="mt_muslo_${esc(m.id)}" value="${esc(m.meta_muslo??'')}"></div>
       </div>
       <div class="row3">
-        <div><label>Pecho (cm)</label><input type="number" step="0.1" id="mt_pecho_${m.id}" value="${m.meta_pecho??''}"></div>
-        <div><label>Pantorrilla (cm)</label><input type="number" step="0.1" id="mt_pantorrilla_${m.id}" value="${m.meta_pantorrilla??''}"></div>
-        <div><label>Cuello (cm)</label><input type="number" step="0.1" id="mt_cuello_${m.id}" value="${m.meta_cuello??''}"></div>
+        <div><label>Pecho (cm)</label><input type="number" step="0.1" id="mt_pecho_${esc(m.id)}" value="${esc(m.meta_pecho??'')}"></div>
+        <div><label>Pantorrilla (cm)</label><input type="number" step="0.1" id="mt_pantorrilla_${esc(m.id)}" value="${esc(m.meta_pantorrilla??'')}"></div>
+        <div><label>Cuello (cm)</label><input type="number" step="0.1" id="mt_cuello_${esc(m.id)}" value="${esc(m.meta_cuello??'')}"></div>
       </div>
       <div class="row3">
-        <div><label>Cintura (cm)</label><input type="number" step="0.1" id="mt_cintura_${m.id}" value="${m.meta_cintura??''}"></div>
-        <div style="align-self:end;"><button class="btn secondary small" style="margin-top:18px;" onclick="guardarMeta('${m.id}')">Guardar meta de ${m.persona}</button></div>
+        <div><label>Cintura (cm)</label><input type="number" step="0.1" id="mt_cintura_${esc(m.id)}" value="${esc(m.meta_cintura??'')}"></div>
+        <div style="align-self:end;"><button class="btn secondary small" style="margin-top:18px;" onclick="guardarMeta('${esc(m.id)}')">Guardar meta de ${esc(m.persona)}</button></div>
       </div>
     </div>
   `).join('');
@@ -1241,10 +1329,10 @@ function renderSaludTabla(){
   if(list.length===0){ wrap.innerHTML='<div class="empty">Sin registros todavía.</div>'; return; }
   wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Peso</th><th>Brazo</th><th>Muslo</th><th>Pecho</th><th>Pantorr.</th><th>Cuello</th><th>Cintura</th><th>Nota</th><th></th></tr></thead><tbody>
     ${list.map(s=>`<tr>
-      <td>${s.fecha||'—'}</td><td>${s.peso||'—'}</td><td>${s.brazo||'—'}</td><td>${s.muslo||'—'}</td>
-      <td>${s.pecho||'—'}</td><td>${s.pantorrilla||'—'}</td><td>${s.cuello||'—'}</td><td>${s.cintura||'—'}</td>
-      <td style="max-width:160px; white-space:pre-wrap;">${s.nota||'—'}</td>
-      <td><button class="btn secondary small" onclick="abrirEdicionSalud('${s.id}')">✎</button></td>
+      <td>${esc(s.fecha||'—')}</td><td>${esc(s.peso||'—')}</td><td>${esc(s.brazo||'—')}</td><td>${esc(s.muslo||'—')}</td>
+      <td>${esc(s.pecho||'—')}</td><td>${esc(s.pantorrilla||'—')}</td><td>${esc(s.cuello||'—')}</td><td>${esc(s.cintura||'—')}</td>
+      <td style="max-width:160px; white-space:pre-wrap;">${esc(s.nota||'—')}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionSalud('${esc(s.id)}')">✎</button></td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -1288,7 +1376,7 @@ function renderSaludResumen(){
   const proximo = sumarDiasFecha(ult.fecha, 7);
   const hoy = getHoy();
   const toca = hoy >= proximo;
-  let linea1 = `<b>Último peso:</b> ${ult.peso} kg (${ult.fecha})`;
+  let linea1 = `<b>Último peso:</b> ${esc(ult.peso)} kg (${esc(ult.fecha)})`;
   if(metaPeso!==null && !isNaN(metaPeso)){
     const dif = metaPeso - parseFloat(ult.peso);
     linea1 += ` · <b>Meta:</b> ${metaPeso} kg · ` + (dif>0 ? `faltan ${dif.toFixed(1)} kg` : `meta alcanzada (${Math.abs(dif).toFixed(1)} kg por encima)`);
@@ -1328,10 +1416,55 @@ document.getElementById('btnAgregarSalud').addEventListener('click', ()=>{
 const DIAS_RUTINA = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo','Lunes a Viernes'];
 function poblarSelectorDias(){
   const sel = document.getElementById('rt_dia');
-  if(sel.options.length>0) return;
   const presentes = [...new Set(RUTINA.map(r=>r.dia))];
   const ordenados = DIAS_RUTINA.filter(d=>presentes.includes(d));
+  const actuales = Array.from(sel.options).map(o=>o.value);
+  if(actuales.length===ordenados.length && actuales.every((d,i)=>d===ordenados[i])) return;
+  const previo = sel.value;
   sel.innerHTML = ordenados.map(d=>`<option value="${d}">${d}</option>`).join('');
+  if(previo && ordenados.includes(previo)) sel.value = previo;
+}
+/* ---- Plan de pantorrillas (lunes, miércoles y sábado por la mañana) ----
+   Ids fijos: añadir el plan dos veces no duplica nada. Mismas columnas de la hoja «Rutina»: no cambia el contrato. */
+const BLOQUE_PANTORRILLAS = 'Pantorrillas — mañana (15–25 min)';
+const PLAN_PANTORRILLAS_DIAS = [
+  {dia:'Lunes', clave:'lun', foco:'Estímulo principal: rutina completa, técnica y recorrido. Anota las repeticiones.'},
+  {dia:'Miércoles', clave:'mie', foco:'Progresión: intenta mejorar una repetición sin acortar el recorrido ni acelerar.'},
+  {dia:'Sábado', clave:'sab', foco:'Consolidación: técnica estricta. No hace falta superar el lunes.'}
+];
+const PLAN_PANTORRILLAS_EJERCICIOS = [
+  {n:1, ejercicio:'Elevación de talones unilateral, rodilla extendida', series:'3 por pierna (sem. 1–2: 2)', reps:'8–20', tempo:'Subir al máximo · bajar 3 s',
+   descripcion:'Descanso 90–150 s. Apoyo ligero en la pared. Apoyo en el antepié (almohadilla tras el dedo gordo). Rodilla extendida sin bloquear. Sin rebotes.', musculos:'Gastrocnemio'},
+  {n:2, ejercicio:'Elevación de talones con rodillas flexionadas', series:'3 (sem. 1–2: 2)', reps:'12–25', tempo:'Subir al máximo · bajar lento',
+   descripcion:'Descanso 60–120 s. Rodillas ligeramente flexionadas todo el tiempo, sin convertirlo en sentadilla. Empieza con ambas piernas; pasa a una sola cuando sobre.', musculos:'Sóleo'},
+  {n:3, ejercicio:'Elevación bilateral con pausa (opcional)', series:'2 (sem. 1–2: 2)', reps:'15–25', tempo:'Pausa 2 s arriba · bajar 2–3 s',
+   descripcion:'Descanso 60–90 s. Omítelo si la fatiga ya deteriora la técnica.', musculos:'Gastrocnemio y sóleo'}
+];
+function registrosPlanPantorrillas(){
+  const out = [];
+  PLAN_PANTORRILLAS_DIAS.forEach(d=>{
+    PLAN_PANTORRILLAS_EJERCICIOS.forEach(e=>{
+      out.push({
+        id:'rt_pant_'+d.clave+'_'+e.n, dia:d.dia, orden:100+e.n, bloque:BLOQUE_PANTORRILLAS,
+        ejercicio:e.ejercicio, series:e.series, reps_duracion:e.reps, tempo:e.tempo,
+        descripcion:(e.n===1 ? d.foco+' ' : '')+e.descripcion, musculos:e.musculos, ultima_marca:'', marca_hoy:''
+      });
+    });
+  });
+  return out;
+}
+function añadirPlanPantorrillas(){
+  const existentes = new Set(RUTINA.map(r=>r.id));
+  const nuevos = registrosPlanPantorrillas().filter(r=>!existentes.has(r.id));
+  if(nuevos.length===0){ alert('El plan de pantorrillas ya está en tu rutina.'); return 0; }
+  nuevos.forEach(r=>{
+    RUTINA.push(r);
+    encolarOperacion({type:'create', collection:'rutina', record:r, ts:Date.now()});
+  });
+  saveLocalCache();
+  renderAll();
+  alert(`Plan de pantorrillas añadido: ${nuevos.length} ejercicios (lunes, miércoles y sábado). Aparecen al final de cada día.`);
+  return nuevos.length;
 }
 function renderRutina(){
   poblarSelectorDias();
@@ -1343,15 +1476,15 @@ function renderRutina(){
   wrap.innerHTML = bloques.map(b=>{
     const items = list.filter(r=>r.bloque===b);
     return `<div style="margin-top:14px;">
-      <h3 style="font-size:12px; color:var(--teal); margin-bottom:6px;">${b}</h3>
+      <h3 style="font-size:12px; color:var(--teal); margin-bottom:6px;">${esc(b)}</h3>
       <table><thead><tr><th>Ejercicio</th><th>Series</th><th>Reps/Dur.</th><th>Tempo</th><th>Última marca</th><th>Marca de hoy</th><th></th></tr></thead><tbody>
       ${items.map(r=>{
         const tendencia = calcTendencia(r.ultima_marca, r.marca_hoy);
         return `<tr>
-          <td>${r.ejercicio}${r.descripcion?`<div style="font-size:10.5px; color:var(--text-mute); margin-top:2px;">${r.descripcion}</div>`:''}</td>
-          <td>${r.series||'—'}</td><td>${r.reps_duracion||'—'}</td><td>${r.tempo||'—'}</td>
-          <td>${r.ultima_marca||'—'}</td>
-          <td><input type="text" style="width:90px;" id="rt_marca_${r.id}" value="${r.marca_hoy||''}" placeholder="ej. 25s"></td>
+          <td>${esc(r.ejercicio)}${r.descripcion?`<div style="font-size:10.5px; color:var(--text-mute); margin-top:2px;">${esc(r.descripcion)}</div>`:''}</td>
+          <td>${esc(r.series||'—')}</td><td>${esc(r.reps_duracion||'—')}</td><td>${esc(r.tempo||'—')}</td>
+          <td>${esc(r.ultima_marca||'—')}</td>
+          <td><input type="text" style="width:90px;" id="rt_marca_${esc(r.id)}" value="${esc(r.marca_hoy||'')}" placeholder="ej. 25s"></td>
           <td>${tendencia}</td>
         </tr>`;
       }).join('')}
@@ -1393,10 +1526,11 @@ function renderMetasRutina(){
   const wrap = document.getElementById('metasRutinaWrap');
   if(RUTINA_METAS.length===0){ wrap.innerHTML='<div class="empty">Sin metas cargadas.</div>'; return; }
   wrap.innerHTML = `<table><thead><tr><th>Dimensión</th><th>Métrica</th><th>Valor inicial</th><th>Meta Fase 1</th><th>Meta Final</th></tr></thead><tbody>
-    ${RUTINA_METAS.map(m=>`<tr><td>${m.dimension}</td><td>${m.metrica}</td><td>${m.valor_inicial}</td><td>${m.meta_fase1}</td><td><b style="color:var(--teal);">${m.meta_final}</b></td></tr>`).join('')}
+    ${RUTINA_METAS.map(m=>`<tr><td>${esc(m.dimension)}</td><td>${esc(m.metrica)}</td><td>${esc(m.valor_inicial)}</td><td>${esc(m.meta_fase1)}</td><td><b style="color:var(--teal);">${esc(m.meta_final)}</b></td></tr>`).join('')}
   </tbody></table>`;
 }
 document.getElementById('rt_dia').addEventListener('change', renderRutina);
+document.getElementById('btnPlanPantorrillas').addEventListener('click', añadirPlanPantorrillas);
 
 /* ============ TAB PROMPTS ============ */
 function getFechaLargaEs(){
@@ -1410,15 +1544,15 @@ function renderPrompts(){
     <div style="border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-bottom:10px; background:var(--panel-2);">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
         <div>
-          <b style="font-size:13px;">${p.nombre}</b>
-          <div style="font-size:10.5px; color:var(--text-mute);">${p.categoria||''} · ${p.frecuencia||''}</div>
+          <b style="font-size:13px;">${esc(p.nombre)}</b>
+          <div style="font-size:10.5px; color:var(--text-mute);">${esc(p.categoria||'')} · ${esc(p.frecuencia||'')}</div>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn secondary small" onclick="copiarPrompt('${p.id}')">Copiar con fecha de hoy</button>
-          <button class="btn secondary small" onclick="togglePromptTexto('${p.id}')">Ver/ocultar</button>
+          <button class="btn secondary small" onclick="copiarPrompt('${esc(p.id)}')">Copiar con fecha de hoy</button>
+          <button class="btn secondary small" onclick="togglePromptTexto('${esc(p.id)}')">Ver/ocultar</button>
         </div>
       </div>
-      <div id="ptxt_${p.id}" style="display:none; margin-top:10px; font-size:11px; white-space:pre-wrap; color:var(--text-dim); max-height:260px; overflow:auto; border-top:1px dashed var(--line); padding-top:8px;">${(p.texto||'').replace(/</g,'&lt;')}</div>
+      <div id="ptxt_${esc(p.id)}" style="display:none; margin-top:10px; font-size:11px; white-space:pre-wrap; color:var(--text-dim); max-height:260px; overflow:auto; border-top:1px dashed var(--line); padding-top:8px;">${(p.texto||'').replace(/</g,'&lt;')}</div>
     </div>
   `).join('');
 }
@@ -1440,10 +1574,10 @@ function poblarSelectPrompts(){
   const sel = document.getElementById('npr_prompt');
   const fsel = document.getElementById('fpr_prompt');
   if(sel.options.length===0){
-    sel.innerHTML = PROMPTS.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
+    sel.innerHTML = PROMPTS.map(p=>`<option value="${esc(p.id)}">${esc(p.nombre)}</option>`).join('');
   }
   if(fsel.options.length<=1){
-    fsel.innerHTML = '<option value="">Todos</option>' + PROMPTS.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
+    fsel.innerHTML = '<option value="">Todos</option>' + PROMPTS.map(p=>`<option value="${esc(p.id)}">${esc(p.nombre)}</option>`).join('');
   }
 }
 function renderRespuestas(){
@@ -1456,8 +1590,8 @@ function renderRespuestas(){
   wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Prompt</th><th>IA</th><th>Respuesta</th></tr></thead><tbody>
     ${list.map(r=>{
       const p = PROMPTS.find(x=>x.id===r.prompt_id);
-      return `<tr><td>${r.fecha||'—'}</td><td>${p?p.nombre:r.prompt_id}</td><td>${r.ia_usada||'—'}</td>
-        <td style="max-width:320px; white-space:pre-wrap;">${r.respuesta||'—'}</td></tr>`;
+      return `<tr><td>${esc(r.fecha||'—')}</td><td>${p?p.nombre:r.prompt_id}</td><td>${esc(r.ia_usada||'—')}</td>
+        <td style="max-width:320px; white-space:pre-wrap;">${esc(r.respuesta||'—')}</td></tr>`;
     }).join('')}
   </tbody></table>`;
 }
@@ -1492,11 +1626,11 @@ function renderTrabajo(){
   if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin actividades registradas todavía.</div>'; return; }
   wrap.innerHTML = `<table><thead><tr><th>Fecha y hora</th><th>Actividad</th><th>Categoría</th><th>Horas</th><th>Entregable</th><th>Nombre y tipo</th><th>Observaciones</th><th></th></tr></thead><tbody>
     ${list.map(t=>`<tr>
-      <td>${t.fecha_hora||'—'}</td>
-      <td>${t.actividad}</td><td>${t.categoria||'—'}</td><td>${t.duracion_horas||'—'}</td>
-      <td>${t.entregable||'—'}</td><td>${t.nombre_tipo||'—'}</td>
-      <td style="max-width:220px; white-space:pre-wrap;">${t.observaciones||'—'}</td>
-      <td><button class="btn secondary small" onclick="abrirEdicionTrabajo('${t.id}')">✎</button></td>
+      <td>${esc(t.fecha_hora||'—')}</td>
+      <td>${esc(t.actividad)}</td><td>${esc(t.categoria||'—')}</td><td>${esc(t.duracion_horas||'—')}</td>
+      <td>${esc(t.entregable||'—')}</td><td>${esc(t.nombre_tipo||'—')}</td>
+      <td style="max-width:220px; white-space:pre-wrap;">${esc(t.observaciones||'—')}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionTrabajo('${esc(t.id)}')">✎</button></td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -1537,10 +1671,10 @@ function renderPendientes(){
   wrap.innerHTML = list.map(p=>{
     const cumplido = p.cumplido==='Sí';
     return `<div class="actrow" style="${cumplido?'opacity:.55;':''}">
-      <div style="width:24px; text-align:center;"><input type="checkbox" ${cumplido?'checked':''} onchange="togglePendiente('${p.id}', this.checked)"></div>
-      <div class="info"><div class="nombre" style="${cumplido?'text-decoration:line-through;':''}">${p.texto}</div></div>
-      <div style="font-size:11px; color:var(--text-mute); white-space:nowrap; padding:0 8px;">${p.fecha||'sin fecha'}</div>
-      <button class="btn secondary small" onclick="eliminarPendiente('${p.id}')">✕</button>
+      <div style="width:24px; text-align:center;"><input type="checkbox" ${cumplido?'checked':''} onchange="togglePendiente('${esc(p.id)}', this.checked)"></div>
+      <div class="info"><div class="nombre" style="${cumplido?'text-decoration:line-through;':''}">${esc(p.texto)}</div></div>
+      <div style="font-size:11px; color:var(--text-mute); white-space:nowrap; padding:0 8px;">${esc(p.fecha||'sin fecha')}</div>
+      <button class="btn secondary small" onclick="eliminarPendiente('${esc(p.id)}')">✕</button>
     </div>`;
   }).join('');
 }
@@ -1577,10 +1711,10 @@ function renderIdeas(){
   wrap.innerHTML = list.map(i=>`
     <div class="actrow">
       <div class="info">
-        <div class="nombre" style="font-weight:400; white-space:pre-wrap;">${i.texto}</div>
-        <div class="prop">${i.fecha_hora||''}${i.etiqueta?' · '+i.etiqueta:''}</div>
+        <div class="nombre" style="font-weight:400; white-space:pre-wrap;">${esc(i.texto)}</div>
+        <div class="prop">${esc(i.fecha_hora||'')}${i.etiqueta?' · '+esc(i.etiqueta):''}</div>
       </div>
-      <button class="btn secondary small" onclick="eliminarIdea('${i.id}')">✕</button>
+      <button class="btn secondary small" onclick="eliminarIdea('${esc(i.id)}')">✕</button>
     </div>`).join('');
 }
 window.eliminarIdea = function(id){
@@ -1606,6 +1740,7 @@ document.getElementById('btnAgregarIdea').addEventListener('click', ()=>{
   const FRASES = {
     buteyko: ["Respira por la nariz, suave y silencioso.","Menos aire, no más: deja que el CO₂ trabaje.","Hombros sueltos. Mandíbula floja.","La pausa es entrenamiento, no lucha.","Si aparece tensión, reduce la intensidad."],
     meditacion: ["Relaja la vista. No enfoques nada con intensidad.","Mira un punto fijo o una zona amplia frente a ti.","Observa la respiración: el aire entra, el aire sale.","Los pensamientos llegan y se van. Vuelve al aire.","Suelta los hombros. Afloja la frente y la mandíbula.","Estás aquí. Solo esta respiración.","Mirada abierta, atención relajada: presencia."],
+    calma: ["Dos inspiraciones por la nariz, la segunda corta. Luego exhala largo, como por una pajilla.","La exhalación larga le dice al cuerpo que baje la guardia.","Suelta los hombros en cada exhalación.","No hay nada que resolver en estos dos minutos.","Mandíbula floja. Lengua suelta."],
     energizante: ["Respira con energía: inhala activo, exhala firme.","Despierta el cuerpo: deja que el ritmo te active.","Mantén la columna erguida y el pecho abierto.","Sostén el ritmo, sin forzar.","Si sientes mareo u hormigueo, detente y respira normal."]
   };
   const NIDRA_STEPS = [
@@ -1626,10 +1761,11 @@ document.getElementById('btnAgregarIdea').addEventListener('click', ()=>{
   const PHASE_SETS = {
     buteyko:    [{n:'Inspira',d:5,s:1.16},{n:'Sostén',d:5,s:1.16},{n:'Exhala',d:5,s:0.84},{n:'Vacío',d:5,s:0.84}],
     meditacion: [{n:'Inspira',d:4,s:1.16},{n:'Exhala',d:6,s:0.84}],
-    energizante:[{n:'Inspira',d:2,s:1.12},{n:'Exhala',d:2,s:0.88}]
+    energizante:[{n:'Inspira',d:2,s:1.12},{n:'Exhala',d:2,s:0.88}],
+    calma:      [{n:'Inspira',d:2,s:1.12},{n:'Inspira corto',d:1,s:1.2},{n:'Exhala largo',d:6,s:0.82}]
   };
-  const TOTALS = {buteyko:15, meditacion:12, energizante:30};
-  const MODOS_LABEL = {buteyko:'Buteyko', meditacion:'Meditación', energizante:'Energizante', nidra:'Yoga Nidra'};
+  const TOTALS = {buteyko:15, meditacion:12, energizante:30, calma:13};
+  const MODOS_LABEL = {buteyko:'Buteyko', meditacion:'Meditación', energizante:'Energizante', nidra:'Yoga Nidra', calma:'Calma rápida'};
 
   let R = { mode:'buteyko', phaseIndex:0, secondsLeft:5, cycle:1, guideIdx:0, nidraIdx:0, running:false, paused:false };
   let respInterval = null;
@@ -1705,6 +1841,7 @@ document.getElementById('btnAgregarIdea').addEventListener('click', ()=>{
   document.getElementById('resp_modo_meditacion').addEventListener('click', ()=>selectMode('meditacion'));
   document.getElementById('resp_modo_energizante').addEventListener('click', ()=>selectMode('energizante'));
   document.getElementById('resp_modo_nidra').addEventListener('click', ()=>selectMode('nidra'));
+  document.getElementById('resp_modo_calma').addEventListener('click', ()=>selectMode('calma'));
 
   document.getElementById('resp_iniciar').addEventListener('click', ()=>{
     R.running = true; R.paused = false;
@@ -1762,6 +1899,66 @@ document.getElementById('btnAgregarIdea').addEventListener('click', ()=>{
   renderResp();
 })();
 
+/* ============ REGISTRO DE ESTRÉS ============ */
+function nivelEstres(v){ const n = parseFloat(String(v).replace(',','.')); return (isNaN(n) || n<0 || n>10) ? null : n; }
+function resumenEstres(lista){
+  const hace14 = new Date(Date.now() - 14*86400000);
+  const lim = new Intl.DateTimeFormat('en-CA', { timeZone: TZ_ECUADOR, year:'numeric', month:'2-digit', day:'2-digit' }).format(hace14);
+  const rec = lista.filter(e => (e.fecha_hora||'').slice(0,10) >= lim && nivelEstres(e.nivel_antes)!==null);
+  const prom = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+  const antes = rec.map(e=>nivelEstres(e.nivel_antes));
+  const porTecnica = {};
+  rec.forEach(e=>{
+    const d = nivelEstres(e.nivel_despues);
+    if(e.tecnica && d!==null){ (porTecnica[e.tecnica] = porTecnica[e.tecnica] || []).push(nivelEstres(e.nivel_antes) - d); }
+  });
+  const horas = {};
+  rec.filter(e=>nivelEstres(e.nivel_antes)>=6).forEach(e=>{ const h = (e.fecha_hora||'').slice(11,13); if(h) horas[h] = (horas[h]||0)+1; });
+  const horaTop = Object.entries(horas).sort((a,b)=>b[1]-a[1])[0];
+  return { n: rec.length, promedioAntes: prom(antes),
+    tecnicas: Object.entries(porTecnica).map(([t,v])=>({tecnica:t, n:v.length, bajada:prom(v)})).sort((a,b)=>b.bajada-a.bajada),
+    horaTop: horaTop ? {hora: horaTop[0], veces: horaTop[1]} : null };
+}
+function renderEstres(){
+  const wrap = document.getElementById('estresWrap'), res = document.getElementById('estresResumen');
+  if(!wrap || !res) return;
+  const r = resumenEstres(ESTRES);
+  if(r.n===0){ res.innerHTML = 'Sin registros en los últimos 14 días.'; }
+  else {
+    let h = `<b>Últimos 14 días:</b> ${r.n} registro(s), nivel medio ${r.promedioAntes.toFixed(1)}/10.`;
+    if(r.tecnicas.length) h += '<br><b>Bajada media por técnica:</b> ' + r.tecnicas.map(t=>`${esc(t.tecnica)} ${t.bajada>=0?'−':'+'}${Math.abs(t.bajada).toFixed(1)} (${t.n})`).join(' · ') + (r.tecnicas.some(t=>t.n<5) ? ' <span style="color:var(--text-mute);">— con menos de 5 registros por técnica es solo una pista.</span>' : '');
+    if(r.horaTop) h += `<br><b>Hora con más estrés alto (≥6):</b> ${esc(r.horaTop.hora)}:00 (${r.horaTop.veces} vez/veces).`;
+    res.innerHTML = h;
+  }
+  const list = [...ESTRES].sort((a,b)=>(b.fecha_hora||'').localeCompare(a.fecha_hora||'')).slice(0,30);
+  if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin registros todavía.</div>'; return; }
+  wrap.innerHTML = `<table><thead><tr><th>Fecha y hora</th><th>Antes</th><th>Disparador</th><th>Técnica</th><th>Después</th><th>Nota</th><th></th></tr></thead><tbody>
+    ${list.map(e=>`<tr><td>${esc(e.fecha_hora||'—')}</td><td>${esc(e.nivel_antes??'—')}</td><td>${esc(e.disparador||'—')}</td><td>${esc(e.tecnica||'—')}</td><td>${esc(e.nivel_despues||'—')}</td><td style="max-width:200px; white-space:pre-wrap;">${esc(e.nota||'')}</td>
+    <td><button class="btn secondary small" onclick="eliminarEstres('${esc(e.id)}')">✕</button></td></tr>`).join('')}
+  </tbody></table>${SERVER_V2 ? '' : '<p style="font-size:11px; color:var(--amber); margin-top:8px;">Los registros se guardan en este dispositivo. Se subirán al Sheet cuando el Apps Script esté actualizado.</p>'}`;
+}
+window.eliminarEstres = function(id){
+  if(!confirm('¿Eliminar este registro de estrés?')) return;
+  ESTRES = ESTRES.filter(x=>x.id!==id);
+  saveLocalCache();
+  if(SERVER_V2) encolarOperacion({type:'delete', id, collection:'estres', ts:Date.now()});
+  renderAll();
+};
+document.getElementById('btnAgregarEstres').addEventListener('click', ()=>{
+  const antes = nivelEstres(document.getElementById('es_antes').value);
+  if(antes===null){ alert('Indica el nivel de estrés actual, de 0 a 10.'); return; }
+  const despuesTxt = document.getElementById('es_despues').value.trim();
+  const despues = despuesTxt==='' ? null : nivelEstres(despuesTxt);
+  if(despuesTxt!=='' && despues===null){ alert('El nivel después debe estar entre 0 y 10.'); return; }
+  const rec = { id:'es'+Date.now(), fecha_hora:getFechaHoraEcuador(), nivel_antes:String(antes),
+    disparador:document.getElementById('es_disparador').value, tecnica:document.getElementById('es_tecnica').value,
+    nivel_despues: despues===null ? '' : String(despues), nota:document.getElementById('es_nota').value.trim() };
+  if(SERVER_V2){ ESTRES.push(rec); saveLocalCache(); encolarOperacion({type:'create', collection:'estres', record:rec, ts:Date.now()}); }
+  else { ESTRES.push(Object.assign({__pend:true}, rec)); saveLocalCache(); }
+  ['es_antes','es_despues','es_nota'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+});
+
 /* ============ TAB ORATORIA ============ */
 function renderOratoria(){
   const wrap = document.getElementById('oratoriaWrap');
@@ -1771,10 +1968,10 @@ function renderOratoria(){
   if(list.length===0){ wrap.innerHTML = '<div class="empty">Sin sesiones todavía.</div>'; return; }
   wrap.innerHTML = `<table><thead><tr><th>Fecha</th><th>Módulo</th><th>Min.</th><th>Autoeval.</th><th>Logro</th><th>Siguiente paso</th><th></th></tr></thead><tbody>
     ${list.map(o=>`<tr>
-      <td>${o.fecha||'—'}</td><td>${o.modulo_dojo||'—'}</td><td>${o.minutos||'—'}</td><td>${o.autoevaluacion||'—'}</td>
-      <td style="max-width:180px; white-space:pre-wrap;">${o.logro||'—'}</td>
-      <td style="max-width:180px; white-space:pre-wrap;">${o.siguiente_paso||'—'}</td>
-      <td><button class="btn secondary small" onclick="abrirEdicionOratoria('${o.id}')">✎</button></td>
+      <td>${esc(o.fecha||'—')}</td><td>${esc(o.modulo_dojo||'—')}</td><td>${esc(o.minutos||'—')}</td><td>${esc(o.autoevaluacion||'—')}</td>
+      <td style="max-width:180px; white-space:pre-wrap;">${esc(o.logro||'—')}</td>
+      <td style="max-width:180px; white-space:pre-wrap;">${esc(o.siguiente_paso||'—')}</td>
+      <td><button class="btn secondary small" onclick="abrirEdicionOratoria('${esc(o.id)}')">✎</button></td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -1818,16 +2015,16 @@ function renderReferenciaR(){
     <div style="border:1px solid var(--line); border-radius:0; padding:10px 12px; margin-bottom:8px; background:var(--panel-2);">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
         <div>
-          <b style="font-size:12.5px;">${r.titulo}</b>
-          <div style="font-size:10px; color:var(--text-mute); text-transform:uppercase; letter-spacing:.06em;">${r.categoria}</div>
+          <b style="font-size:12.5px;">${esc(r.titulo)}</b>
+          <div style="font-size:10px; color:var(--text-mute); text-transform:uppercase; letter-spacing:.06em;">${esc(r.categoria)}</div>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn secondary small" onclick="copiarSnippetR('${r.id}')">Copiar código</button>
-          <button class="btn secondary small" onclick="abrirEdicionReferenciaR('${r.id}')">✎</button>
+          <button class="btn secondary small" onclick="copiarSnippetR('${esc(r.id)}')">Copiar código</button>
+          <button class="btn secondary small" onclick="abrirEdicionReferenciaR('${esc(r.id)}')">✎</button>
         </div>
       </div>
       <pre style="margin-top:8px; font-size:11px; white-space:pre-wrap; color:var(--text-dim); overflow-x:auto;">${(r.codigo||'').replace(/</g,'&lt;')}</pre>
-      ${r.nota?`<div style="font-size:10.5px; color:var(--amber); margin-top:4px;">⚠ ${r.nota}</div>`:''}
+      ${r.nota?`<div style="font-size:10.5px; color:var(--amber); margin-top:4px;">⚠ ${esc(r.nota)}</div>`:''}
     </div>
   `).join('');
 }
@@ -1868,8 +2065,8 @@ function renderEconomia(){
   wrap.innerHTML = list.map(e=>`
     <div style="border:1px solid var(--line); border-radius:0; padding:10px 12px; margin-bottom:8px; background:var(--panel-2);">
       <div style="display:flex; justify-content:space-between; align-items:start; gap:8px;">
-        <b style="font-size:12.5px;">${e.materia}</b>
-        <button class="btn secondary small" onclick="abrirEdicionEconomia('${e.id}')">✎</button>
+        <b style="font-size:12.5px;">${esc(e.materia)}</b>
+        <button class="btn secondary small" onclick="abrirEdicionEconomia('${esc(e.id)}')">✎</button>
       </div>
       <p style="margin-top:6px; font-size:11.5px; line-height:1.6; color:var(--text-dim);">${(e.resumen||'').replace(/</g,'&lt;')}</p>
     </div>
@@ -1890,13 +2087,13 @@ document.getElementById('btnAgregarEconomia').addEventListener('click', ()=>{
 
 /* ============ CONFIG / RESET ============ */
 document.getElementById('btnResetLocal').addEventListener('click', async ()=>{
-  if(!confirm('Esto borra TODA la copia local de este dispositivo (las 16 colecciones) y trae de nuevo todo desde el Sheet. ¿Continuar?')) return;
+  if(!confirm('Esto borra TODA la copia local de este dispositivo (todas las colecciones) y trae de nuevo todo desde el Sheet. ¿Continuar?')) return;
   ACTIVIDADES = []; REGISTROS = []; FAMILIA = []; RACHAS = []; SALUD = []; SALUD_METAS = [];
   RUTINA = []; RUTINA_METAS = []; PROMPTS = []; PROMPTS_RESPUESTAS = []; REGISTRO_TRABAJO = [];
-  PENDIENTES = []; IDEAS = []; ORATORIA = []; REFERENCIA_R = []; ECONOMIA = []; OUTBOX = [];
+  PENDIENTES = []; IDEAS = []; ORATORIA = []; REFERENCIA_R = []; ECONOMIA = []; ESTRES = []; OUTBOX = [];
   [LOCAL_ACT_KEY, LOCAL_REG_KEY, LOCAL_FAM_KEY, LOCAL_RACHAS_KEY, LOCAL_SALUD_KEY, LOCAL_METAS_KEY,
    LOCAL_RUTINA_KEY, LOCAL_RMETAS_KEY, LOCAL_PROMPTS_KEY, LOCAL_PRESP_KEY, LOCAL_TRABAJO_KEY,
-   LOCAL_PEND_KEY, LOCAL_IDEAS_KEY, LOCAL_ORATORIA_KEY, LOCAL_REFR_KEY, LOCAL_ECON_KEY, OUTBOX_KEY].forEach(k=>localStorage.removeItem(k));
+   LOCAL_PEND_KEY, LOCAL_IDEAS_KEY, LOCAL_ORATORIA_KEY, LOCAL_REFR_KEY, LOCAL_ECON_KEY, LOCAL_ESTRES_KEY, OUTBOX_KEY].forEach(k=>localStorage.removeItem(k));
   await syncWithCloud();
   renderAll();
   alert('Caché local borrada por completo. Estado actual traído desde el Sheet.\n\nEndpoint activo: '+(ENDPOINT||'(ninguno configurado)'));
@@ -1922,6 +2119,7 @@ function renderAll(){
   renderOratoria();
   renderReferenciaR();
   renderEconomia();
+  renderEstres();
 }
 async function loadAll(){
   if('serviceWorker' in navigator){

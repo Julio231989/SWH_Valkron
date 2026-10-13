@@ -1,4 +1,4 @@
-const CACHE_NAME = 'valkron-shell-v9';
+const CACHE_NAME = 'valkron-shell-v11';
 const SHELL_FILES = [
   './index.html',
   './manifest.webmanifest',
